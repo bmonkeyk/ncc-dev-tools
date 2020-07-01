@@ -1,0 +1,9 @@
+<Manifest>
+    <BusinessComponet name="{0}" dispname="{1}">
+        <public/>
+        <client/>
+        <private/>
+        <test/>
+        <resource/>
+    </BusinessComponet>
+</Manifest>

@@ -1,0 +1,70 @@
+<idea-plugin>
+    <id>com.yonyou.ncchr.plugin.ncc-dev-tools</id>
+    <name>ncc-dev-tools</name>
+    <version>2.0</version>
+    <vendor email="liuchaol@yonyou.com" url="http://www.yonyou.com">用友网络科技股份有限公司NCC HR 开发部</vendor>
+
+    <description>###ncc类路径设置;###ncc模块组件新增;###ncc补丁导出;ncc预置脚本导出;ncc建库脚本导出;ncc数据源设置###</description>
+
+    <change-notes>###ncc类路径设置;###ncc模块组件新增;###ncc补丁导出;ncc预置脚本导出;ncc建库脚本导出;ncc数据源设置###</change-notes>
+
+    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
+    <idea-version since-build="173.0"/>
+    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+         on how to target different products -->
+    <!-- uncomment to enable plugin in all products
+    <depends>component.intellij.modules.lang</depends>
+    -->
+    <actions>
+        <action id="add ncc module" class="com.yingling.module.action.CreatNewModuleAction" text="MDE module">
+            <add-to-group group-id="NewGroup" relative-to-action="NewModule" anchor="before"/>
+        </action>
+        <action id="add ncc componet" class="com.yingling.module.action.CreatComponetAction" text="MDE componet">
+            <add-to-group group-id="NewGroup" relative-to-action="NewModule" anchor="before"/>
+        </action>
+        <!-- Add your actions here -->
+        <action id="set module libraries" class="com.yingling.libraries.action.LibrarySetAction" text="设置nc类路径">
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
+        </action>
+        <action id="copy extend file" class="com.yingling.extend.action.CoryExtendAction" text="复制鉴权文件到nchome">
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
+        </action>
+        <action id="copy ejb file" class="com.yingling.ejbconf.action.CopyEjbConfAction" text="复制upm文件到nchome">
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
+        </action>
+        <action id="com.yonyou.ria.core.scriptexport.action1"
+                class="com.yonyou.ria.core.scriptexport.ui.actions.ExportComponentInitDataAction" text="导出预置脚本"
+                description="使用items.xml文件导出预置数据脚本">
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
+        </action>
+        <action id="com.yonyou.ria.core.pdmexport.action1"
+                class="com.yonyou.ria.core.pdmexport.popup.actions.ExportDBCreateScriptsAction" text="pdm文件导出建库脚本"
+                description="使用pdm文件导出建库脚本">
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
+        </action>
+        <action id="build-patcher" class="com.yingling.patcher.action.BuildPatcher" text="导出补丁..."
+                description="导出NMC格式补丁">
+            <add-to-group group-id="ChangesViewPopupMenu" anchor="last"/>
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
+            <add-to-group group-id="Vcs.Log.ChangesBrowser.Popup" anchor="last"/>
+        </action>
+        <action class="com.yingling.debug.action.NewServerApplicationAction" id="new server config"
+                text="new server config" description="new server config"/>
+        <action class="com.yingling.debug.action.NewClientApplicationAction" id="new client config"
+                text="new client config" description="new client config"/>
+
+        <group id="test" text="creat debug config" popup="true" description="creat debug config">
+            <reference id="new server config"/>
+            <reference id="new client config"/>
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
+        </group>
+
+    </actions>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <projectConfigurable instance="com.yingling.extensions.component.NccDevSettingComponent"/>
+        <projectService serviceInterface="com.yingling.extensions.service.NccEnvSettingService"
+                        serviceImplementation="com.yingling.extensions.service.NccEnvSettingService"/>
+    </extensions>
+
+</idea-plugin>

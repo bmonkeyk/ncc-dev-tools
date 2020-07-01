@@ -1,0 +1,6 @@
+#foreach($view in $views)
+/* view code: $view.name */
+create view $view.name as $view.sql
+go
+
+#end

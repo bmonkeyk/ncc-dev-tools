@@ -1,0 +1,9 @@
+#foreach($index in $indexs)
+/* indexcode: $index.name */
+create#*#if($index.clustered) clustered#end*# #if($index.unique)unique#end index $index.name on $index.table.name.toLowerCase() (#set($colIndex = 0)#foreach($col in $index.columns)
+#if($colIndex < $index.columns.size() - 1)${col.name.toLowerCase()} asc,
+#else${col.name.toLowerCase()} asc#end#set($colIndex = $colIndex+1)
+#end)
+/
+
+#end

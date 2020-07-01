@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<installpatch>
+    <copy>
+        <from>/replacement/modules/</from>
+        <to>/modules/</to>
+    </copy>
+    <copy>
+        <from>/replacement/hotwebs/</from>
+        <to>/hotwebs/</to>
+    </copy>
+</installpatch>

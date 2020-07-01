@@ -1,0 +1,19 @@
+#foreach($table in $tables)
+/* tablename: ${table.desc} */
+create table ${table.name.toLowerCase()} (
+#foreach($col in $table.allColumns)
+$col.name.toLowerCase()#if($col.typeName.toLowerCase().matches('varchar\([0-9]*\)')) n$col.typeName.toLowerCase()#elseif($col.typeName.toLowerCase().matches('char\([0-9]*\)')) n$col.typeName.toLowerCase()#else $col.typeName.toLowerCase()#end#if(!${col.nullable}) not#end null#if($col.defaultValue && $col.defaultValue.length() != 0) default ${col.defaultValue}#end
+ 
+/*$col.desc*/,
+#end
+#if(${table.pkConstraint})
+ constraint ${table.pkConstraint.name} primary key (#set($pkColIndex = 0)
+#foreach($pkCol in ${table.pkConstraint.columns})
+#set($pkColIndex = $pkColIndex + 1)#if($pkColIndex < ${table.pkConstraint.columns.size()})${pkCol.name.toLowerCase()},#else${pkCol.name.toLowerCase()}#end#end),
+#else #end
+ ts char(19) null default convert(char(19),getdate(),20),
+dr smallint null default 0
+)
+go
+
+#end

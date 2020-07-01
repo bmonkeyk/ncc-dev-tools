@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Manifest>
+    <BusinessComponet name="{0}" dispname="{1}">
+        <public/>
+        <client/>
+        <private/>
+        <test/>
+        <resource/>
+        <funnodes/>
+    </BusinessComponet>
+</Manifest>

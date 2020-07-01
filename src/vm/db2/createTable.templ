@@ -1,0 +1,18 @@
+#foreach($table in $tables)
+/* tablename: ${table.desc} */
+create table ${table.name.toLowerCase()} (#foreach($col in $table.allColumns)
+$col.name.toLowerCase() $col.typeName.toLowerCase()#if(!${col.nullable}) not#end null#if($col.defaultValue && $col.defaultValue.length() != 0) default ${col.defaultValue}#end
+ 
+/*$col.desc*/,
+#end
+#if(${table.pkConstraint})
+ constraint ${table.pkConstraint.name} primary key (#set($pkColIndex = 0)
+#foreach($pkCol in ${table.pkConstraint.columns})
+#set($pkColIndex = $pkColIndex + 1)#if($pkColIndex < ${table.pkConstraint.columns.size()})${pkCol.name.toLowerCase()},#else${pkCol.name.toLowerCase()}#end#end),
+#else #end
+ ts char(19) null,
+dr smallint null default 0
+)
+;
+
+#end

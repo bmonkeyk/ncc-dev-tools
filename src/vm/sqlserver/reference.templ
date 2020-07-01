@@ -1,0 +1,6 @@
+#foreach($fkConstraint in $fkConstraints)
+/* reference code: $fkConstraint.name */
+alter table $fkConstraint.table.name.toLowerCase() add constraint $fkConstraint.name foreign key (#set($fkColIndex = 0)#foreach($fkCol in $fkConstraint.columns)$fkCol.name#if($fkColIndex<$fkConstraint.columns.size() - 1),#end#set($fkColIndex=$fkColIndex+1)#end) references $fkConstraint.refTable.name.toLowerCase() (#set($refColIndex=0)#foreach($refCol in $fkConstraint.refColumns)$refCol.name#if($refColIndex<${fkConstraint.refColumns.size()} - 1),#end#set($refColIndex = $refColIndex+1)#end)
+go
+
+#end
