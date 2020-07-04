@@ -18,15 +18,22 @@ public class SetDevDataBaseAction extends AbstractButtonAction {
 
     @Override
     protected void doAction(ActionEvent event, NccDevSettingDlg dlg) {
-        String dsname = (String) dlg.getDatabaseDriverInfoBox().getSelectedItem();
-        if (!"".equals(dsname) && !"design".equals(dsname)) {
+        String dsname = (String) dlg.getDataSourceMetaBox().getSelectedItem();
+
+        int count = dlg.getDataSourceMetaBox().getItemCount();
+        for(int i=0 ; i<count ; i++){
+           if("design".equals(dlg.getDataSourceMetaBox().getItemAt(i))){
+               return ;
+           }
+        }
+        if (!"".equals(dsname)) {
             try {
                 dlg.setDirty(true);
                 Map<String, DataSourceMeta> dataSourceMetaMap = dlg.getDataSourceMetaMap();
                 DataSourceMeta meta = (DataSourceMeta) dataSourceMetaMap.get(dsname).clone();
                 meta.setDataSourceName("design");
                 dataSourceMetaMap.put(meta.getDataSourceName(), meta);
-                dlg.getDatabaseDriverInfoBox().setSelectedIndex(0);
+                dlg.getDataSourceMetaBox().setSelectedIndex(0);
             } catch (CloneNotSupportedException ex) {
             }
         }

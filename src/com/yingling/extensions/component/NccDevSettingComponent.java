@@ -31,10 +31,16 @@ public class NccDevSettingComponent implements SearchableConfigurable {
     @Nullable
     @Override
     public JComponent createComponent() {
-        return getDlg().getContentPane();
+        if(getDlg() != null){
+            return getDlg().getContentPane();
+        }
+        return null;
     }
 
     private NccDevSettingDlg getDlg() {
+        if(service == null){
+            return null;
+        }
         if (dlg == null) {
             dlg = new NccDevSettingDlg();
             dlg.setSize(new Double(dlg.getSize().getWidth()).intValue(), 200);
@@ -49,6 +55,9 @@ public class NccDevSettingComponent implements SearchableConfigurable {
 
     @Override
     public void apply() throws ConfigurationException {
+        if(service == null){
+            return;
+        }
         int i = dlg.getNccSetTab().getSelectedIndex();//0是home设置页面，1是数据源设置页面
         if (i == 0) {
             String newPath = getDlg().getHomeText().getText();
@@ -71,6 +80,9 @@ public class NccDevSettingComponent implements SearchableConfigurable {
 
     @Override
     public void reset() {
+        if(service == null){
+            return ;
+        }
         getDlg().getHomeText().setText(service.getNcHomePath());
         getDlg().getTableText().setText(service.getTablesPath());
     }

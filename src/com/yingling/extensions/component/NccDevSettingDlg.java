@@ -43,8 +43,7 @@ public class NccDevSettingDlg extends JDialog {
 
     //mac 设置备份module
     private JButton setLibBtn;
-    private JButton backupSelBtn;
-    private JTextField backupText;
+
 
     //设置数据源 组件
     private JPanel dataSourcePanel;
@@ -121,11 +120,10 @@ public class NccDevSettingDlg extends JDialog {
         //页签切换
         nccSetTab.addChangeListener(new NccSetTabbedChangeListener(this));
 
-        //mac 下判定备份目录是否可用
-        String osName = System.getProperties().getProperty("os.name");
-        boolean isMac = !osName.toLowerCase().startsWith("win");
-        backupSelBtn.setEnabled(isMac);
-        backupText.setEnabled(isMac);
+        NccEnvSettingService service = NccEnvSettingService.getInstance();
+        if(service == null){
+            return ;
+        }
 
         //初始化设置参数和监听
         homeSetListener();

@@ -30,8 +30,8 @@ public class MustModuleDlg extends JDialog {
     private JButton buttonCancel;
     private JScrollPane dataScrollPane;
     private JButton selAllBtn;
-    private JButton cancelAllBtn;
-    private JButton defaultSelBtn;
+    private JButton cancelSelBtn;
+    private JButton mustSelBtn;
     private JBTable table;
 
 
@@ -80,14 +80,14 @@ public class MustModuleDlg extends JDialog {
             }
         });
 
-        defaultSelBtn.addActionListener(new ActionListener() {
+        mustSelBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 doSelDefault();
             }
         });
         //全消
-        cancelAllBtn.addActionListener(new ActionListener() {
+        cancelSelBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 doCancelAll();

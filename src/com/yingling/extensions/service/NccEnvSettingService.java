@@ -4,11 +4,13 @@ import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.Messages;
 import com.pub.util.ProjectManager;
 import org.apache.commons.lang.StringUtils;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
 
 @State(name = "NccEnvSetting", storages = {@com.intellij.openapi.components.Storage(file = "$PROJECT_CONFIG_DIR$/nccEnvSetting.xml")})
 public class NccEnvSettingService implements PersistentStateComponent<Element> {
@@ -34,7 +36,13 @@ public class NccEnvSettingService implements PersistentStateComponent<Element> {
     }
 
     public static NccEnvSettingService getInstance(Project project) {
-        return ServiceManager.getService(project, NccEnvSettingService.class);
+        if(project == null){
+            Messages.showMessageDialog("please open a project", "error", Messages.getErrorIcon());
+            return null ;
+        } else {
+            return ServiceManager.getService(project, NccEnvSettingService.class);
+        }
+
     }
 
     @Nullable
