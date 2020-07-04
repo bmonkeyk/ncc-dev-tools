@@ -363,13 +363,9 @@ public class ExportPatcherUtil {
             throw new BusinessException(className.substring(1).replace(File.separator, ".") + " is old,\n please rebuild : " + moduleName);
         }
         //输出补丁
-        if (javaName.endsWith(TYPE_CLASS)) {
-            outPatcher(moduleName, compilerOutputUrl + className, toPath + className);
-        }
+        outPatcher(moduleName, compilerOutputUrl + className, toPath + className);
         //导出源文件
-        if (javaName.endsWith(TYPE_JAVA)) {
-            outPatcher(moduleName, fromFile.getPath(), toPath + javaName);
-        }
+        outPatcher(moduleName, fromFile.getPath(), toPath + javaName);
 
     }
 
