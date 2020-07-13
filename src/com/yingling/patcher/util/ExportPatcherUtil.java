@@ -72,7 +72,10 @@ public class ExportPatcherUtil {
      */
     public ExportPatcherUtil(String patchName, String webServerName, String exportPath, AnActionEvent event) {
         this.event = event;
-        this.exportPath = exportPath + File.separator + "patch_" + System.currentTimeMillis();
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+        String dateStr = simpleDateFormat.format(new Date());
+        this.exportPath = exportPath + File.separator + "patch_" + dateStr;
         this.patchName = patchName;
         if (StringUtils.isNotBlank(webServerName)) {
             if (!webServerName.startsWith(File.separator)) {
