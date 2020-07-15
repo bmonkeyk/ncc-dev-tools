@@ -1,7 +1,6 @@
 package com.yingling.libraries.listener;
 
 import com.intellij.openapi.command.WriteCommandAction;
-import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.OrderRootType;
 import com.intellij.openapi.roots.impl.libraries.LibraryEx;
@@ -17,13 +16,15 @@ import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.util.*;
 
 /**
  * 设置nc类路径-按jar
  */
 public class LibrariesJarSetListener {
+
+    private static Set<String> classPathSet = new HashSet<>();
+
     public static void setLibraries(String homePath) throws BusinessException {
 
         //nc类路径
@@ -143,26 +144,37 @@ public class LibrariesJarSetListener {
                 if (file.isDirectory()) {
                     libraryModel.addRoot(VirtualFileManager.constructUrl("file", url), OrderRootType.CLASSES);
                 } else {
-                    String fileUrl;
+                    String classFileUrl = null;
+                    String jarFileUrl = null;
                     OrderRootType orderRootType;
                     if (url.endsWith("_src.jar")) {
-                        fileUrl = VirtualFileManager.constructUrl("jar", url + "!/");
+                        jarFileUrl = VirtualFileManager.constructUrl("jar", url + "!/");
                         orderRootType = OrderRootType.SOURCES;
                     } else if (url.endsWith(".jar")) {
-                        fileUrl = VirtualFileManager.constructUrl("jar", url + "!/");
+                        jarFileUrl = VirtualFileManager.constructUrl("jar", url + "!/");
                         orderRootType = OrderRootType.CLASSES;
                     } else if (url.endsWith(".java")) {
-                        fileUrl = VirtualFileManager.constructUrl("file", url);
+                        String classPath = url.split("classes")[0] + "classes";
                         orderRootType = OrderRootType.SOURCES;
+                        classFileUrl = VirtualFileManager.constructUrl("file", classPath) + orderRootType.toString();
                     } else if (url.endsWith(".class")) {
-                        fileUrl = VirtualFileManager.constructUrl("file", url);
+                        String classPath = url.split("classes")[0] + "classes";
                         orderRootType = OrderRootType.CLASSES;
+                        classFileUrl = VirtualFileManager.constructUrl("file", classPath) + orderRootType.toString();
                     } else {
                         continue;
                     }
-                    VirtualFile virtualFile = VirtualFileManager.getInstance().findFileByUrl(fileUrl);
-//                    virtualFile.setCharset(Charset.forName("GBK"));
-                    libraryModel.addRoot(virtualFile, orderRootType);
+
+                    VirtualFile virtualFile = null;
+                    if (StringUtils.isNotBlank(jarFileUrl)) {
+                        virtualFile = VirtualFileManager.getInstance().findFileByUrl(jarFileUrl);
+                    } else if (StringUtils.isNotBlank(classFileUrl)) {
+                        virtualFile = VirtualFileManager.getInstance().findFileByUrl(classFileUrl.split("Root")[0]);
+
+                    }
+                    if (virtualFile != null) {
+                        libraryModel.addRoot(virtualFile, orderRootType);
+                    }
                 }
             }
 
