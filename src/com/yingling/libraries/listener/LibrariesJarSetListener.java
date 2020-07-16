@@ -23,7 +23,6 @@ import java.util.*;
  */
 public class LibrariesJarSetListener {
 
-    private static Set<String> classPathSet = new HashSet<>();
 
     public static void setLibraries(String homePath) throws BusinessException {
 
@@ -70,45 +69,45 @@ public class LibrariesJarSetListener {
 
         //设置ant
         String antPath = homePath + File.separator + "ant";
-        Set<String> antUrl = scanJarAndClasses(antPath, true, false);
+        List<String> antUrl = scanJarAndClasses(antPath, true, false);
 
         //设置framework
         String frameworkPath = homePath + File.separator + "framework";
-        Set<String> frameworkSet = scanJarAndClasses(frameworkPath, false, false);
+        List<String> frameworkList = scanJarAndClasses(frameworkPath, false, false);
 
         //设置middleware
         String middlewarePath = homePath + File.separator + "middleware";
-        Set<String> middlewareSet = scanJarAndClasses(middlewarePath, false, false);
+        List<String> middlewareList = scanJarAndClasses(middlewarePath, false, false);
 
         //扫描lang目录
         String langPath = homePath + File.separator + "langlib";
-        Set<String> langSet = scanJarAndClasses(langPath, false, false);
+        List<String> langList = scanJarAndClasses(langPath, false, false);
 
         //扫描hotwebs
         String hotwebPath = homePath + File.separator + "hotwebs" + File.separator + "nccloud" + File.separator + "WEB-INF";
         String externalPath = homePath + File.separator + "external";
         hotwebEspecial(homePath, externalPath);//移动pub_platform到external
-        Set<String> nccloudSet = scanJarAndClasses(hotwebPath, true, true);
+        List<String> nccloudList = scanJarAndClasses(hotwebPath, true, true);
 
         //扫描lib 和 external
         String libPath = homePath + File.separator + "lib";
-        Set<String> libSet = scanJarAndClasses(libPath, false, false);
-        Set<String> externalSet = scanJarAndClasses(externalPath, true, true);
-        Set<String> productSet = new HashSet<>();
-        productSet.addAll(libSet);
-        productSet.addAll(externalSet);
+        List<String> libList = scanJarAndClasses(libPath, false, false);
+        List<String> externalList = scanJarAndClasses(externalPath, true, true);
+        List<String> productList = new ArrayList<>();
+        productList.addAll(libList);
+        productList.addAll(externalList);
 
         //扫描ejb目录
         String ejbPath = homePath + "ejb";
-        Set<String> ejbSet = scanJarAndClasses(ejbPath, false, false);
+        List<String> ejbList = scanJarAndClasses(ejbPath, false, false);
         //扫描resource
         String resourcePath = homePath + File.separator + "resources";
-        Set<String> resourcesSet = new HashSet<>();
-        resourcesSet.add(resourcePath);
+        List<String> resourcesList = new ArrayList<>();
+        resourcesList.add(resourcePath);
 
         //扫描modules
         String modulesPath = homePath + File.separator + "modules";
-        Map<String, Set<String>> moduleMap = scanModules(modulesPath);
+        Map<String, List<String>> moduleMap = scanModules(modulesPath);
         if (!moduleMap.isEmpty()) {
             for (String key : moduleMap.keySet()) {
                 setLibrary(moduleMap.get(key), project, (LibraryEx.ModifiableModelEx) model.getLibraryByName(key).getModifiableModel());
@@ -116,13 +115,13 @@ public class LibrariesJarSetListener {
         }
         //设置类路径
         setLibrary(antUrl, project, (LibraryEx.ModifiableModelEx) model.getLibraryByName(ClassPathConstantUtil.PATH_NAME_ANT).getModifiableModel());
-        setLibrary(frameworkSet, project, (LibraryEx.ModifiableModelEx) model.getLibraryByName(ClassPathConstantUtil.PATH_NAME_FRAMEWORK).getModifiableModel());
-        setLibrary(middlewareSet, project, (LibraryEx.ModifiableModelEx) model.getLibraryByName(ClassPathConstantUtil.PATH_NAME_MIDDLEWARE).getModifiableModel());
-        setLibrary(langSet, project, (LibraryEx.ModifiableModelEx) model.getLibraryByName(ClassPathConstantUtil.PATH_NAME_LANG).getModifiableModel());
-        setLibrary(productSet, project, (LibraryEx.ModifiableModelEx) model.getLibraryByName(ClassPathConstantUtil.PATH_NAME_PRODUCT).getModifiableModel());
-        setLibrary(ejbSet, project, (LibraryEx.ModifiableModelEx) model.getLibraryByName(ClassPathConstantUtil.PATH_NAME_EJB).getModifiableModel());
-        setLibrary(nccloudSet, project, (LibraryEx.ModifiableModelEx) model.getLibraryByName(ClassPathConstantUtil.PATH_NAME_NCCLOUD).getModifiableModel());
-        setLibrary(resourcesSet, project, (LibraryEx.ModifiableModelEx) model.getLibraryByName(ClassPathConstantUtil.PATH_NAME_RESOURCES).getModifiableModel());
+        setLibrary(frameworkList, project, (LibraryEx.ModifiableModelEx) model.getLibraryByName(ClassPathConstantUtil.PATH_NAME_FRAMEWORK).getModifiableModel());
+        setLibrary(middlewareList, project, (LibraryEx.ModifiableModelEx) model.getLibraryByName(ClassPathConstantUtil.PATH_NAME_MIDDLEWARE).getModifiableModel());
+        setLibrary(langList, project, (LibraryEx.ModifiableModelEx) model.getLibraryByName(ClassPathConstantUtil.PATH_NAME_LANG).getModifiableModel());
+        setLibrary(productList, project, (LibraryEx.ModifiableModelEx) model.getLibraryByName(ClassPathConstantUtil.PATH_NAME_PRODUCT).getModifiableModel());
+        setLibrary(ejbList, project, (LibraryEx.ModifiableModelEx) model.getLibraryByName(ClassPathConstantUtil.PATH_NAME_EJB).getModifiableModel());
+        setLibrary(nccloudList, project, (LibraryEx.ModifiableModelEx) model.getLibraryByName(ClassPathConstantUtil.PATH_NAME_NCCLOUD).getModifiableModel());
+        setLibrary(resourcesList, project, (LibraryEx.ModifiableModelEx) model.getLibraryByName(ClassPathConstantUtil.PATH_NAME_RESOURCES).getModifiableModel());
 
 
         WriteCommandAction.runWriteCommandAction(project, model::commit);
@@ -136,7 +135,7 @@ public class LibrariesJarSetListener {
      * @param project
      * @param libraryModel
      */
-    private static void setLibrary(Set<String> urlSet, Project project, LibraryEx.ModifiableModelEx libraryModel) {
+    private static void setLibrary(List<String> urlSet, Project project, LibraryEx.ModifiableModelEx libraryModel) {
 
         for (String url : urlSet) {
             File file = new File(url);
@@ -192,10 +191,20 @@ public class LibrariesJarSetListener {
      * @param libFlag
      * @return
      */
-    private static Set<String> scanJarAndClasses(String basePath, boolean libFlag, boolean classFlag) {
-        Set<String> pathList = new HashSet<>();
+    private static List<String> scanJarAndClasses(String basePath, boolean libFlag, boolean classFlag) {
+        List<String> pathList = new ArrayList<>();
         basePath += File.separator;
 
+        if (classFlag) {
+            //扫描classes
+            String classesPath = basePath + "classes";
+            File classesFile = new File(classesPath);
+            if (classesFile.exists()) {
+                Set<String> classSet = new HashSet<>();
+                getClassFiles(classesFile, classSet);
+                pathList.addAll(classSet);
+            }
+        }
         //扫描lib
         String jarPath = basePath;
         if (libFlag) {
@@ -212,18 +221,6 @@ public class LibrariesJarSetListener {
                 }
             }
         }
-
-        if (classFlag) {
-            //扫描classes
-            String classesPath = basePath + "classes";
-            File classesFile = new File(classesPath);
-            if (classesFile.exists()) {
-                Set<String> classSet = new HashSet<>();
-                getClassFiles(classesFile, classSet);
-                pathList.addAll(classSet);
-            }
-        }
-
         return pathList;
     }
 
@@ -279,18 +276,18 @@ public class LibrariesJarSetListener {
         }
     }
 
-    private static Map<String, Set<String>> scanModules(String modulesPath) {
+    private static Map<String, List<String>> scanModules(String modulesPath) {
 
-        Map<String, Set<String>> jarMap = new HashMap<>();
+        Map<String, List<String>> jarMap = new HashMap<>();
         File modulesFile = new File(modulesPath);
         File[] modules = modulesFile.listFiles();
 
         if (modules == null) {
             return jarMap;
         }
-        Set<String> publicLibrarySet = new HashSet<>();
-        Set<String> privateLibrarySet = new HashSet<>();
-        Set<String> clientLibrarySet = new HashSet<>();
+        List<String> publicLibrarySet = new ArrayList<>();
+        List<String> privateLibrarySet = new ArrayList<>();
+        List<String> clientLibrarySet = new ArrayList<>();
         for (File module : modules) {
             String modulePath = module.getPath();
             String publicPath = modulePath;
