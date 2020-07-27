@@ -125,7 +125,7 @@ public class NewModuleDialog extends JDialog {
             util.outFile(file, content, "gb2312", false);
 
             //设置类路径
-            ProjectManager.getInstance().setModuleLibrary(module);
+            ProjectManager.getInstance().setModuleLibrary(project,module);
         } catch (BusinessException e) {
             e.printStackTrace();
             Messages.showErrorDialog(this, e.getMessage(), "Error");

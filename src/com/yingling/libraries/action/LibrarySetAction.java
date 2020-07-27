@@ -18,7 +18,7 @@ public class LibrarySetAction extends AnAction {
         Module selectModule = event.getData(LangDataKeys.MODULE);
         String message = "success";
         try {
-            ProjectManager.getInstance().setModuleLibrary(selectModule);
+            ProjectManager.getInstance().setModuleLibrary(event.getProject(),selectModule);
             Messages.showInfoMessage(message, "Tips");
         } catch (BusinessException e) {
             e.printStackTrace();

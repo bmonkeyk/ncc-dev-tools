@@ -104,8 +104,8 @@ public class ProjectManager {
      *
      * @param module
      */
-    public void setModuleLibrary(Module module) throws BusinessException {
-        Library[] libraries = getProjectLibraries(getProject());
+    public void setModuleLibrary(Project project,Module module) throws BusinessException {
+        Library[] libraries = getProjectLibraries(project);
         if (libraries == null || libraries.length == 0) {
             throw new BusinessException("this project is not set libraries!");
         }
