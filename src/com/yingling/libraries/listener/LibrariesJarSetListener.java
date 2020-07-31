@@ -86,7 +86,7 @@ public class LibrariesJarSetListener {
         //扫描hotwebs
         String hotwebPath = homePath + File.separator + "hotwebs" + File.separator + "nccloud" + File.separator + "WEB-INF";
         String externalPath = homePath + File.separator + "external";
-        hotwebEspecial(homePath, externalPath);//移动pub_platform到external
+//        hotwebEspecial(homePath, externalPath);//移动pub_platform到external
         List<String> nccloudList = scanJarAndClasses(hotwebPath, true, true);
 
         //扫描lib 和 external
