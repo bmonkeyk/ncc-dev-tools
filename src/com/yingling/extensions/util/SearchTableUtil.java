@@ -1,14 +1,10 @@
 package com.yingling.extensions.util;
 
-import com.jolbox.bonecp.BoneCP;
-import com.jolbox.bonecp.BoneCPConfig;
+import com.yingling.util.DBDataUtil;
 import nc.uap.plugin.studio.ui.preference.prop.DataSourceMeta;
 import org.apache.commons.lang.StringUtils;
 
 import javax.swing.table.DefaultTableModel;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.util.*;
 
 /**
@@ -35,6 +31,7 @@ public class SearchTableUtil {
      */
     public DefaultTableModel getTableList(String searchKey) {
 
+
         String[] fieldArr = new String[]{"classid", "id", "tablename", "modulename", "parentmodulename"};
         DefaultTableModel model = null;
         if (meta == null || StringUtils.isBlank(searchKey)) {
@@ -47,7 +44,7 @@ public class SearchTableUtil {
                     "LEFT JOIN md_module mo ON mo.ID = co.OWNMODULE " +
                     "WHERE t.id like '%" + searchKey + "%' OR t.displayname LIKE '%" + searchKey + "%'";
 
-            List<Map<String, String>> rs = getResult(sql, fieldArr);
+            List<Map<String, String>> rs = new DBDataUtil(meta).getResult(sql, fieldArr);
 
             model = getTableModel(fieldArr, rs);
         }
@@ -72,15 +69,16 @@ public class SearchTableUtil {
         String[] columnTitleArr = new String[]{"code", "name", "sqldatetype", "columnlength", "description", "datatypename", "datatype", "enumvalue", "classtype"};
 
         DefaultTableModel model = null;
+
         try {
             if (meta == null || StringUtils.isBlank(classId) || StringUtils.isBlank(tableId)) {
                 model = getTableModel(columnTitleArr, null);
             } else {
-
+                DBDataUtil util = new DBDataUtil(meta);
                 //根据表名查询列信息
                 String[] columnFieldArr = new String[]{"id", "name", "sqldatetype", "columnlength"};
                 String sqlColumnSql = "SELECT id,name , SQLDATETYPE,COLUMNLENGTH FROM MD_COLUMN WHERE TABLEID = '" + tableId + "'";
-                List<Map<String, String>> columnRs = getResult(sqlColumnSql, columnFieldArr);
+                List<Map<String, String>> columnRs = util.getResult(sqlColumnSql, columnFieldArr);
                 Map<String, Map<String, String>> columnMap = new HashMap<>();
 
                 if (columnRs != null) {
@@ -111,7 +109,7 @@ public class SearchTableUtil {
                         "ORDER BY mp.name";
 
                 List<Map<String, String>> list = new ArrayList<>();
-                List<Map<String, String>> tableInfo = getResult(sql, columnTitleArr);
+                List<Map<String, String>> tableInfo = util.getResult(sql, columnTitleArr);
                 Map<Integer, String> indexMap = new HashMap<>();//记录枚举项下标
                 int i = 0;
                 for (Map<String, String> map : tableInfo) {
@@ -147,7 +145,7 @@ public class SearchTableUtil {
                     }
                     where = "(" + where.substring(1) + ")";
                     Map<String, String> enumMap = new HashMap<>();
-                    List<Map<String, String>> enumSet = getResult("SELECT id,value,name FROM MD_ENUMVALUE WHERE id IN " + where + " order by value", new String[]{"id", "value", "name"});
+                    List<Map<String, String>> enumSet = util.getResult("SELECT id,value,name FROM MD_ENUMVALUE WHERE id IN " + where + " order by value", new String[]{"id", "value", "name"});
                     for (Map<String, String> map : enumSet) {
                         String id = map.get("id");
                         String value = enumMap.get(id);
@@ -201,59 +199,4 @@ public class SearchTableUtil {
         }
         return model;
     }
-
-
-    /**
-     * 执行sql查询
-     *
-     * @param sql
-     * @param fieldArr
-     * @return
-     */
-    private List<Map<String, String>> getResult(String sql, String[] fieldArr) {
-        List<Map<String, String>> listMap = new ArrayList<>();
-        ResultSet rs = null;
-        PreparedStatement ps = null;
-        Connection conn = null;
-        try {
-            Class.forName(meta.getDriverClassName(), true, BoneCPConfig.class.getClassLoader());
-            BoneCPConfig config = new BoneCPConfig();
-            config.setJdbcUrl(meta.getDatabaseUrl());
-            config.setUsername(meta.getUser());
-            config.setPassword(meta.getPassword());
-            BoneCP connPool = new BoneCP(config);
-            conn = connPool.getConnection();
-            ps = conn.prepareStatement(sql);
-            rs = ps.executeQuery();
-
-
-            if (rs != null) {
-                while (rs.next()) {
-                    Map<String, String> map = new HashMap();
-                    for (String key : fieldArr) {
-                        map.put(key, rs.getString(key));
-                    }
-                    listMap.add(map);
-                }
-            }
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        } finally {
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (ps != null) {
-                    ps.close();
-                }
-                if (conn != null) {
-                    conn.close();
-                }
-            } catch (Exception e) {
-
-            }
-        }
-        return listMap;
-    }
-
 }

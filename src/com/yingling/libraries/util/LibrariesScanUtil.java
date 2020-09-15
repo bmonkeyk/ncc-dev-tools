@@ -164,6 +164,12 @@ public class LibrariesScanUtil {
         File jarFile = new File(jarPath);
         if (jarFile.exists()) {
             pathList.add(jarFile.getPath());
+            File [] files = jarFile.listFiles();
+            for(File file : files){
+                if(file.getName().endsWith("_src.jar")){
+                    pathList.add(file.getPath());
+                }
+            }
         }
 
         //扫描classes
