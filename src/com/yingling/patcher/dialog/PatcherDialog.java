@@ -25,6 +25,7 @@ public class PatcherDialog extends JDialog {
     private JPanel filePanel;
     private JTextField patcherName;
     private JTextField serverName;
+    private JCheckBox srcFlagCheckBox;
     private AnActionEvent event;
     private JBList fieldList;
 
@@ -38,12 +39,14 @@ public class PatcherDialog extends JDialog {
         getRootPane().setDefaultButton(buttonOK);
 
         buttonOK.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 onOK();
             }
         });
 
         buttonCancel.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 onCancel();
             }
@@ -52,6 +55,7 @@ public class PatcherDialog extends JDialog {
         // call onCancel() when cross is clicked
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
+            @Override
             public void windowClosing(WindowEvent e) {
                 onCancel();
             }
@@ -59,6 +63,7 @@ public class PatcherDialog extends JDialog {
 
         // call onCancel() on ESCAPE
         contentPane.registerKeyboardAction(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 onCancel();
             }
@@ -97,7 +102,9 @@ public class PatcherDialog extends JDialog {
         }
 
         String exportPath = savePath.getText();
-        ExportPatcherUtil util = new ExportPatcherUtil(patcherName.getText(), serverName.getText(), exportPath, event);
+
+        boolean srcFlag = srcFlagCheckBox.isSelected();
+        ExportPatcherUtil util = new ExportPatcherUtil(patcherName.getText(), serverName.getText(), exportPath,srcFlag, event);
         try {
             util.exportPatcher();
             String zipName = util.getZipName();
