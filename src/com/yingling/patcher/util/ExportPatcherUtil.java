@@ -66,24 +66,25 @@ public class ExportPatcherUtil {
     private AnActionEvent event;
     private String webServerName = File.separator + "nccloud";
     private String zipName = "";
-    private boolean srcFlag = false ;
+    private boolean srcFlag = false;
 
     /**
      * 补丁工具类构造方法
+     *
      * @param patchName
      * @param webServerName
      * @param exportPath
      * @param srcFlag
      * @param event
      */
-    public ExportPatcherUtil(String patchName, String webServerName, String exportPath, boolean srcFlag,AnActionEvent event) {
+    public ExportPatcherUtil(String patchName, String webServerName, String exportPath, boolean srcFlag, AnActionEvent event) {
         this.event = event;
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
         String dateStr = simpleDateFormat.format(new Date());
         this.exportPath = exportPath + File.separator + "patch_" + dateStr;
         this.patchName = patchName;
-        this.srcFlag = srcFlag ;
+        this.srcFlag = srcFlag;
         if (StringUtils.isNotBlank(webServerName)) {
             if (!webServerName.startsWith(File.separator)) {
                 webServerName = File.separator + webServerName;
@@ -111,9 +112,6 @@ public class ExportPatcherUtil {
         for (Module module : modules) {
             moduleMap.put(module.getName(), module);
         }
-
-        //工程路径
-        String projectPath = project.getBasePath();
 
         //选取文件路径和模块之间的关系
         Map<String, Set<String>> modulePathMap = new HashMap();
@@ -164,20 +162,20 @@ public class ExportPatcherUtil {
                         classPath = classPath.replace(PATH_PRIVATE, "");
                     }
                     String className = classPath.substring(1).replaceAll(Matcher.quoteReplacement(File.separator), ".");
-                    if(className.startsWith("main.java")){
-                        className = className.replace("main.java.","");
+                    if (className.startsWith("main.java")) {
+                        className = className.replace("main.java.", "");
                     }
                     classNameSet.add(className);
                 } else if (fileName.endsWith(TYPE_XML)) {//导出xml文件
-                    exportXml(moduleName, ncModuleName, compilerOutputUrl, fromFile);
+                    exportXml(moduleName, ncModuleName, fromFile);
                 } else if (fileName.endsWith(TYPE_UPM)) {//upm文件
                     exportUpm(moduleName, ncModuleName, fromFile);
-                } else if(fileName.endsWith(TYPE_BMF) || fileName.endsWith(TYPE_BPF)){//导出元数据文件
-                    exportMetaFile(moduleName,ncModuleName,fromFile);
+                } else if (fileName.endsWith(TYPE_BMF) || fileName.endsWith(TYPE_BPF)) {//导出元数据文件
+                    exportMetaFile(moduleName, ncModuleName, fromFile);
                 }
             }
             //收集修改的module
-            if(StringUtils.isNotBlank(ncModuleName)){
+            if (StringUtils.isNotBlank(ncModuleName)) {
                 moduleSet.add(ncModuleName);
             }
         }
@@ -194,7 +192,6 @@ public class ExportPatcherUtil {
         //删除导出的目录
         delete(new File(exportPath));
     }
-
 
 
     /**
@@ -294,11 +291,10 @@ public class ExportPatcherUtil {
      * 导出xml文件
      *
      * @param moduleName
-     * @param compilerOutputUrl
      * @param fromFile
      * @throws IOException
      */
-    private void exportXml(String moduleName, String ncModuleName, String compilerOutputUrl, File fromFile) throws Exception {
+    private void exportXml(String moduleName, String ncModuleName, File fromFile) throws Exception {
         //判断文件类型
         if (fromFile.exists()) {
             InputStream in = new FileInputStream(fromFile);
@@ -317,7 +313,11 @@ public class ExportPatcherUtil {
                 toPath = exportPath + PATH_REPLACEMENT + PATH_MODULES + File.separator + ncModuleName + File.separator + PATH_CLIENT + PATH_CLASSES;
                 className = patchPath.split(Matcher.quoteReplacement(PATH_SRC))[1].replace(PATH_CLIENT, "");
             } else if ("mapper".equals(root.getTagName())) {//mapper文件
-                toPath = exportPath + webServerName + PATH_WEB_INF + PATH_CLASSES + PATH_MAPPER;
+                String path = "";
+                if (webServerName.endsWith("ncchr")) {
+                    path = PATH_REPLACEMENT + PATH_HOTWEBS;
+                }
+                toPath = exportPath + path + webServerName + PATH_WEB_INF + PATH_CLASSES + PATH_MAPPER;
                 className = patchPath.split(Matcher.quoteReplacement(PATH_SRC))[1].replace(File.separatorChar + "main" + File.separator + "resources" + PATH_MAPPER, "");
             }
 
@@ -330,6 +330,7 @@ public class ExportPatcherUtil {
 
     /**
      * 导出元数据文件
+     *
      * @param moduleName
      * @param ncModuleName
      * @param fromFile
@@ -338,14 +339,15 @@ public class ExportPatcherUtil {
         String fileName = fromFile.getName();
         String fromParentPath = fromFile.getParent();
         String toPath = exportPath + PATH_REPLACEMENT + PATH_MODULES + File.separator + ncModuleName
-                + PATH_METADATA ;
+                + PATH_METADATA;
         String componentPath = "";
-        if(fromParentPath.contains(PATH_METADATA)){
+        if (fromParentPath.contains(PATH_METADATA)) {
             componentPath = fromParentPath.split(PATH_METADATA)[1];
         }
         toPath += componentPath + File.separator + fileName;
-        outPatcher(moduleName,fromFile.getPath(),toPath);
+        outPatcher(moduleName, fromFile.getPath(), toPath);
     }
+
     /**
      * 导出uppm文件
      *
@@ -392,10 +394,11 @@ public class ExportPatcherUtil {
                 javaName = javaName.replace(PATH_PRIVATE, "");
                 toPath = modulePath + PATH_META_INF + PATH_CLASSES;
             }
-        } else if(webServerName.contains("ncchr")){
+        } else if (webServerName.contains("ncchr")) {
             //ncchr补丁，支持云管家
             String basePath = File.separator + "main" + File.separator + "java";
             className = className.replace(basePath, "");
+            javaName = javaName.replace(basePath, "");
             toPath = exportPath + PATH_REPLACEMENT + PATH_HOTWEBS + webServerName + PATH_WEB_INF + PATH_CLASSES;
         } else { //普通web项目
             String basePath = File.separator + "main" + File.separator + "java";
@@ -409,7 +412,7 @@ public class ExportPatcherUtil {
         //输出补丁
         outPatcher(moduleName, compilerOutputUrl + className, toPath + className);
         //导出源文件
-        if(srcFlag){
+        if (srcFlag) {
             outPatcher(moduleName, fromFile.getPath(), toPath + javaName);
         }
 
@@ -432,7 +435,7 @@ public class ExportPatcherUtil {
                 }
             } else {
                 if (elementPath.endsWith(TYPE_JAVA) || elementPath.endsWith(TYPE_XML) || elementPath.endsWith(TYPE_UPM)
-                || elementPath.endsWith(TYPE_BMF) || elementPath.endsWith(TYPE_BPF)) {
+                        || elementPath.endsWith(TYPE_BMF) || elementPath.endsWith(TYPE_BPF)) {
                     fileUrlSet.add(elementPath);
                 }
             }
