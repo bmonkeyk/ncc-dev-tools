@@ -45,6 +45,8 @@ public class ExportPatcherUtil {
     private final String PATH_MODULES = File.separator + "modules";
     private final String PATH_META_INF = File.separator + "META-INF";
     private final String PATH_METADATA = File.separator + "METADATA";
+    private final String PATH_RESOURCES = File.separator + "resources";
+    private final String PATH_MAIN = File.separator + "main";
     private final String PATH_EXTEND = File.separator + "extend";
     private final String PATH_SRC = File.separator + "src";
     private final String TYPE_JAVA = ".java";
@@ -53,10 +55,12 @@ public class ExportPatcherUtil {
     private final String TYPE_UPM = ".upm";
     private final String FILE_MODULE = "module.xml";
     private final String NAME_MODULE = "name";
-    private String PATH_HOTWEBS = File.separator + "hotwebs";
-    private String PATH_REPLACEMENT = File.separator + "replacement";
-    private String TYPE_BMF = ".bmf";
-    private String TYPE_BPF = ".bpf";
+    private final String PATH_HOTWEBS = File.separator + "hotwebs";
+    private final String PATH_REPLACEMENT = File.separator + "replacement";
+    private final String TYPE_BMF = ".bmf";
+    private final String TYPE_BPF = ".bpf";
+    private final String TYPE_PROPERTIES = ".properties";
+
 
     /**
      * 导出变量
@@ -137,6 +141,7 @@ public class ExportPatcherUtil {
         for (String moduleName : modulePathMap.keySet()) {
             Module module = moduleMap.get(moduleName);
             Set<String> fileUrlSet = modulePathMap.get(moduleName);
+            System.out.println("start output :" + moduleName + ",total : " + fileUrlSet.size());
             CompilerModuleExtension instance = CompilerModuleExtension.getInstance(module);
             VirtualFile outPath = instance.getCompilerOutputPath();
             if (outPath == null) {
@@ -145,6 +150,7 @@ public class ExportPatcherUtil {
             String compilerOutputUrl = outPath.getPath();
             String ncModuleName = getNCModuleName(module);
 
+            int i = 1 ;
             for (String fileUrl : fileUrlSet) {
                 File fromFile = new File(fileUrl);
                 String fileName = fromFile.getName();
@@ -172,7 +178,11 @@ public class ExportPatcherUtil {
                     exportUpm(moduleName, ncModuleName, fromFile);
                 } else if (fileName.endsWith(TYPE_BMF) || fileName.endsWith(TYPE_BPF)) {//导出元数据文件
                     exportMetaFile(moduleName, ncModuleName, fromFile);
+                } else if(fileName.endsWith(TYPE_PROPERTIES)){//导出多语文件
+                    exportProperties(moduleName,fromFile);
                 }
+                System.out.println("output :" + i + " " + fileUrl);
+                i ++ ;
             }
             //收集修改的module
             if (StringUtils.isNotBlank(ncModuleName)) {
@@ -192,7 +202,6 @@ public class ExportPatcherUtil {
         //删除导出的目录
         delete(new File(exportPath));
     }
-
 
     /**
      * 压缩后删除原目录
@@ -318,7 +327,7 @@ public class ExportPatcherUtil {
                     path = PATH_REPLACEMENT + PATH_HOTWEBS;
                 }
                 toPath = exportPath + path + webServerName + PATH_WEB_INF + PATH_CLASSES + PATH_MAPPER;
-                className = patchPath.split(Matcher.quoteReplacement(PATH_SRC))[1].replace(File.separatorChar + "main" + File.separator + "resources" + PATH_MAPPER, "");
+                className = patchPath.split(Matcher.quoteReplacement(PATH_SRC))[1].replace(PATH_MAIN + PATH_RESOURCES + PATH_MAPPER, "");
             }
 
             //输出补丁
@@ -348,6 +357,21 @@ public class ExportPatcherUtil {
         outPatcher(moduleName, fromFile.getPath(), toPath);
     }
 
+    /**
+     * 导出多语文件
+     * @param fromFile
+     */
+    private void exportProperties(String moduleName ,File fromFile) throws Exception {
+        String fileName = fromFile.getName();
+        String fromParentPath = fromFile.getParent();
+        String toPath = exportPath + PATH_REPLACEMENT + PATH_RESOURCES ;
+        String componentPath = "";
+        if (fromParentPath.contains(PATH_RESOURCES)) {
+            componentPath = fromParentPath.split(PATH_RESOURCES)[1];
+        }
+        toPath += componentPath + File.separator + fileName;
+        outPatcher(moduleName, fromFile.getPath(), toPath);
+    }
     /**
      * 导出uppm文件
      *
@@ -426,7 +450,8 @@ public class ExportPatcherUtil {
      */
     private void getFileUrl(String elementPath, Set<String> fileUrlSet) {
 
-        if (elementPath.contains(PATH_SRC) || elementPath.contains(PATH_META_INF) || elementPath.contains(PATH_METADATA)) {
+        if (elementPath.contains(PATH_SRC) || elementPath.contains(PATH_META_INF)
+                || elementPath.contains(PATH_METADATA) || elementPath.contains(PATH_RESOURCES)) {
             File file = new File(elementPath);
             if (file.isDirectory()) {
                 File[] childrenFile = file.listFiles();
@@ -435,7 +460,7 @@ public class ExportPatcherUtil {
                 }
             } else {
                 if (elementPath.endsWith(TYPE_JAVA) || elementPath.endsWith(TYPE_XML) || elementPath.endsWith(TYPE_UPM)
-                        || elementPath.endsWith(TYPE_BMF) || elementPath.endsWith(TYPE_BPF)) {
+                        || elementPath.endsWith(TYPE_BMF) || elementPath.endsWith(TYPE_BPF) || elementPath.endsWith(TYPE_PROPERTIES)) {
                     fileUrlSet.add(elementPath);
                 }
             }
