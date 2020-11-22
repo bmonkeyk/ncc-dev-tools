@@ -334,6 +334,9 @@ public class ExportPatcherUtil {
             if (StringUtil.isNotEmpty(toPath)) {
                 outPatcher(moduleName, fromFile.getPath(), toPath + className);
             }
+            if(in != null){
+                in.close();
+            }
         }
     }
 
@@ -351,7 +354,9 @@ public class ExportPatcherUtil {
                 + PATH_METADATA;
         String componentPath = "";
         if (fromParentPath.contains(PATH_METADATA)) {
-            componentPath = fromParentPath.split(PATH_METADATA)[1];
+            if(fromParentPath.split(Matcher.quoteReplacement(PATH_METADATA)).length == 2){
+                componentPath = fromParentPath.split(Matcher.quoteReplacement(PATH_METADATA))[1];
+            }
         }
         toPath += componentPath + File.separator + fileName;
         outPatcher(moduleName, fromFile.getPath(), toPath);
@@ -367,7 +372,7 @@ public class ExportPatcherUtil {
         String toPath = exportPath + PATH_REPLACEMENT + PATH_RESOURCES ;
         String componentPath = "";
         if (fromParentPath.contains(PATH_RESOURCES)) {
-            componentPath = fromParentPath.split(PATH_RESOURCES)[1];
+            componentPath = fromParentPath.split(Matcher.quoteReplacement(PATH_RESOURCES))[1];
         }
         toPath += componentPath + File.separator + fileName;
         outPatcher(moduleName, fromFile.getPath(), toPath);
