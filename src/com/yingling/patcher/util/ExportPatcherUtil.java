@@ -60,6 +60,7 @@ public class ExportPatcherUtil {
     private final String TYPE_BMF = ".bmf";
     private final String TYPE_BPF = ".bpf";
     private final String TYPE_PROPERTIES = ".properties";
+    private final String FILE_COMPONENT = "component.xml";
 
 
     /**
@@ -124,24 +125,30 @@ public class ExportPatcherUtil {
         for (VirtualFile file : selectFile) {
             String path = new File(file.getPath()).getPath();
             //从文件路径中截取module名
-
             String moduleName = ModuleUtil.findModuleForFile(file, project).getName();
-
+            //判断如是选择了模块或者组件，则获取所有可导出的目录
+            List<String> fileList = getAllFileList(path, moduleMap.get(moduleName));
             Set<String> fileUrlSet = modulePathMap.get(moduleName);
             if (fileUrlSet == null) {
                 fileUrlSet = new HashSet<>();
                 modulePathMap.put(moduleName, fileUrlSet);
             }
-            getFileUrl(path, fileUrlSet);
+            for (String str : fileList) {
+                getFileUrl(str, fileUrlSet);
+            }
         }
 
         //收集导出的文件
         Set<String> classNameSet = new HashSet<>();
         Set<String> moduleSet = new HashSet<>();
+
+        int count = 1;
+        int moduleIndex = 1;
+        System.out.println(".............statr output , module count:" + modulePathMap.keySet().size() + "............");
         for (String moduleName : modulePathMap.keySet()) {
             Module module = moduleMap.get(moduleName);
             Set<String> fileUrlSet = modulePathMap.get(moduleName);
-            System.out.println("start output :" + moduleName + ",total : " + fileUrlSet.size());
+            System.out.println("......stat the " + moduleIndex + "th module : " + moduleName + ",total : " + fileUrlSet.size() + "......");
             CompilerModuleExtension instance = CompilerModuleExtension.getInstance(module);
             VirtualFile outPath = instance.getCompilerOutputPath();
             if (outPath == null) {
@@ -150,13 +157,20 @@ public class ExportPatcherUtil {
             String compilerOutputUrl = outPath.getPath();
             String ncModuleName = getNCModuleName(module);
 
-            int i = 1 ;
+            int i = 1;
             for (String fileUrl : fileUrlSet) {
                 File fromFile = new File(fileUrl);
                 String fileName = fromFile.getName();
                 if (fileName.endsWith(TYPE_JAVA)) {//导出java文件
-                    exportJava(moduleName, ncModuleName, compilerOutputUrl, fromFile);
+                    boolean flag = exportJava(moduleName, ncModuleName, compilerOutputUrl, fromFile);
+                    if(!flag){
+                        continue;
+                    }
                     //收集文件名，用于创建nmc日志
+                    if (fileUrl.split(Matcher.quoteReplacement(PATH_SRC)).length != 2) {
+                        //不在src下的不导出
+                        continue;
+                    }
                     String classPath = fileUrl.split(Matcher.quoteReplacement(PATH_SRC))[1];
                     if (classPath.startsWith(PATH_CLIENT)) {
                         classPath = classPath.replace(PATH_CLIENT, "");
@@ -178,18 +192,23 @@ public class ExportPatcherUtil {
                     exportUpm(moduleName, ncModuleName, fromFile);
                 } else if (fileName.endsWith(TYPE_BMF) || fileName.endsWith(TYPE_BPF)) {//导出元数据文件
                     exportMetaFile(moduleName, ncModuleName, fromFile);
-                } else if(fileName.endsWith(TYPE_PROPERTIES)){//导出多语文件
-                    exportProperties(moduleName,fromFile);
+                } else if (fileName.endsWith(TYPE_PROPERTIES)) {//导出多语文件
+                    exportProperties(moduleName, fromFile);
                 }
                 System.out.println("output :" + i + " " + fileUrl);
-                i ++ ;
+                i++;
+                count++;
             }
+            System.out.println("......finished,module: " + moduleName + " total:" + fileUrlSet.size() + "......");
+            moduleIndex++;
             //收集修改的module
             if (StringUtils.isNotBlank(ncModuleName)) {
                 moduleSet.add(ncModuleName);
             }
         }
-
+        moduleIndex = moduleIndex - 1 ;
+        count = count -1 ;
+        System.out.println("............finished all ,module count : " +moduleIndex+ "total:" + count + ".............");
         //创建ncm日志文件,只有ncccloud和ncchr的代码创建
         if (webServerName.endsWith("nccloud") || webServerName.endsWith("ncchr")) {
             //修改模块包含对应的web服务
@@ -334,7 +353,7 @@ public class ExportPatcherUtil {
             if (StringUtil.isNotEmpty(toPath)) {
                 outPatcher(moduleName, fromFile.getPath(), toPath + className);
             }
-            if(in != null){
+            if (in != null) {
                 in.close();
             }
         }
@@ -354,7 +373,7 @@ public class ExportPatcherUtil {
                 + PATH_METADATA;
         String componentPath = "";
         if (fromParentPath.contains(PATH_METADATA)) {
-            if(fromParentPath.split(Matcher.quoteReplacement(PATH_METADATA)).length == 2){
+            if (fromParentPath.split(Matcher.quoteReplacement(PATH_METADATA)).length == 2) {
                 componentPath = fromParentPath.split(Matcher.quoteReplacement(PATH_METADATA))[1];
             }
         }
@@ -364,12 +383,13 @@ public class ExportPatcherUtil {
 
     /**
      * 导出多语文件
+     *
      * @param fromFile
      */
-    private void exportProperties(String moduleName ,File fromFile) throws Exception {
+    private void exportProperties(String moduleName, File fromFile) throws Exception {
         String fileName = fromFile.getName();
         String fromParentPath = fromFile.getParent();
-        String toPath = exportPath + PATH_REPLACEMENT + PATH_RESOURCES ;
+        String toPath = exportPath + PATH_REPLACEMENT + PATH_RESOURCES;
         String componentPath = "";
         if (fromParentPath.contains(PATH_RESOURCES)) {
             componentPath = fromParentPath.split(Matcher.quoteReplacement(PATH_RESOURCES))[1];
@@ -377,6 +397,7 @@ public class ExportPatcherUtil {
         toPath += componentPath + File.separator + fileName;
         outPatcher(moduleName, fromFile.getPath(), toPath);
     }
+
     /**
      * 导出uppm文件
      *
@@ -398,10 +419,14 @@ public class ExportPatcherUtil {
      * @param fromFile
      * @throws IOException
      */
-    private void exportJava(String moduleName, String ncModuleName, String compilerOutputUrl, File fromFile) throws Exception {
+    private boolean exportJava(String moduleName, String ncModuleName, String compilerOutputUrl, File fromFile) throws Exception {
 
         String toPath = null;
         String patchPath = fromFile.getPath();
+        if (patchPath.split(Matcher.quoteReplacement(PATH_SRC)).length != 2) {
+            //不在src下的不导出
+            return false;
+        }
         String className = patchPath.split(Matcher.quoteReplacement(PATH_SRC))[1].replace(TYPE_JAVA, TYPE_CLASS);
         String javaName = patchPath.split(Matcher.quoteReplacement(PATH_SRC))[1];
         if (StringUtils.isNotBlank(ncModuleName)) {//nc模块
@@ -444,7 +469,7 @@ public class ExportPatcherUtil {
         if (srcFlag) {
             outPatcher(moduleName, fromFile.getPath(), toPath + javaName);
         }
-
+        return true ;
     }
 
     /**
@@ -464,7 +489,7 @@ public class ExportPatcherUtil {
                     getFileUrl(childFile.getPath(), fileUrlSet);
                 }
             } else {
-                if (elementPath.endsWith(TYPE_JAVA) || elementPath.endsWith(TYPE_XML) || elementPath.endsWith(TYPE_UPM)
+                if ((elementPath.endsWith(TYPE_JAVA) && elementPath.contains(PATH_SRC))|| elementPath.endsWith(TYPE_XML) || elementPath.endsWith(TYPE_UPM)
                         || elementPath.endsWith(TYPE_BMF) || elementPath.endsWith(TYPE_BPF) || elementPath.endsWith(TYPE_PROPERTIES)) {
                     fileUrlSet.add(elementPath);
                 }
@@ -496,6 +521,72 @@ public class ExportPatcherUtil {
             }
         }
     }
+
+    /**
+     * 获取选中目录下所有可导出目录
+     *
+     * @param path
+     * @param module
+     * @return
+     */
+    private List<String> getAllFileList(String path, Module module) {
+        List<String> fileList = new ArrayList<>();
+        File moduleFile = new File(path + PATH_META_INF + File.separator + FILE_MODULE);
+        //如果是模块，就向下寻找组件
+        if (moduleFile.exists()) {
+            File[] componentFiles = new File(path).listFiles();
+            for (File component : componentFiles) {
+                if (component.isFile()) {
+                    continue;
+                }
+                File componentFile = new File(component.getPath() + File.separator + FILE_COMPONENT);
+                if (componentFile.exists()) {
+                    fileList.addAll(getComponentPathList(component));
+                }
+            }
+        }
+        if (fileList.size() > 0) {
+            return fileList;
+        }
+        //如果不是模块，则判断是不是组件
+        File componentFile = new File(path + File.separator + FILE_COMPONENT);
+        if (componentFile.exists()) {
+            fileList = getComponentPathList(new File(path));
+        }
+        if (fileList.size() > 0) {
+            return fileList;
+        }
+        //如果什么都不是，则判断是不是模块下的文件或者目录
+        String modulePath = module.getModuleFile().getParent().getPath();
+        if (path.startsWith(modulePath)) {
+            fileList.add(path);
+        }
+        return fileList;
+    }
+
+    /**
+     * 获取组件下边可导出的目录
+     *
+     * @param componentFile
+     * @return
+     */
+    private List<String> getComponentPathList(File componentFile) {
+
+        List<String> fileList = new ArrayList<>();
+        if (componentFile.exists()) {
+            for (File file : componentFile.listFiles()) {
+                if (file.isFile()) {
+                    continue;
+                }
+                if (file.getPath().endsWith(PATH_META_INF) || file.getPath().endsWith(PATH_METADATA)
+                        || file.getPath().endsWith(PATH_RESOURCES) || file.getPath().endsWith(PATH_SRC)) {
+                    fileList.add(file.getPath());
+                }
+            }
+        }
+        return fileList;
+    }
+
 
     public String getExportPath() {
         return exportPath;
