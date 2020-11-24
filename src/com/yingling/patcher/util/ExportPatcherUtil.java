@@ -208,7 +208,7 @@ public class ExportPatcherUtil {
         }
         moduleIndex = moduleIndex - 1 ;
         count = count -1 ;
-        System.out.println("............finished all ,module count : " +moduleIndex+ "total:" + count + ".............");
+        System.out.println("............finished all ,module count : " +moduleIndex+ " total:" + count + ".............");
         //创建ncm日志文件,只有ncccloud和ncchr的代码创建
         if (webServerName.endsWith("nccloud") || webServerName.endsWith("ncchr")) {
             //修改模块包含对应的web服务
@@ -558,7 +558,7 @@ public class ExportPatcherUtil {
         }
         //如果什么都不是，则判断是不是模块下的文件或者目录
         String modulePath = module.getModuleFile().getParent().getPath();
-        if (path.startsWith(modulePath)) {
+        if (path.startsWith(new File(modulePath).getPath())) {
             fileList.add(path);
         }
         return fileList;
