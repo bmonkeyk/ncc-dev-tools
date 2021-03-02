@@ -88,7 +88,7 @@ public class NccDevSettingDlg extends JDialog {
     private JScrollPane tableListScrollPane;
     private JScrollPane tableInfoScrollPane;
     private JLabel mdInfoLabel;
-
+    private JButton exportDefdocBtn;
 
 
     @Override
@@ -153,6 +153,8 @@ public class NccDevSettingDlg extends JDialog {
         moduleSelBtn.addActionListener(new ModuleSelAction(this));
         setLibBtn.addActionListener(new LibrarySetAction(this));
         setMustAction.addActionListener(new SetMustAction(this));
+
+        exportDefdocBtn.setVisible(false);
     }
 
     /**

@@ -5,7 +5,6 @@ import com.pub.exception.BusinessException;
 import com.yingling.extensions.component.NccDevSettingDlg;
 import com.yingling.extensions.listener.AbstractButtonAction;
 import com.yingling.libraries.listener.LibrariesJarSetListener;
-import com.yingling.libraries.listener.LibrariesPathSetListener;
 
 import java.awt.event.ActionEvent;
 
@@ -23,7 +22,6 @@ public class LibrarySetAction extends AbstractButtonAction {
 
         try {
             LibrariesJarSetListener.setLibraries(dlg.getHomeText().getText());
-//            LibrariesPathSetListener.setLibraries(dlg.getHomeText().getText());
             Messages.showInfoMessage("success", "tips");
         } catch (BusinessException e) {
             e.printStackTrace();

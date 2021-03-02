@@ -11,11 +11,15 @@ import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.pub.exception.BusinessException;
+import com.yingling.patcher.dialog.PatcherDialog;
 import com.yingling.util.ConfigureFileUtil;
 import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
@@ -72,6 +76,7 @@ public class ExportPatcherUtil {
     private String webServerName = File.separator + "nccloud";
     private String zipName = "";
     private boolean srcFlag = false;
+    private boolean cloudFlag = false ;
 
     /**
      * 补丁工具类构造方法
@@ -82,7 +87,7 @@ public class ExportPatcherUtil {
      * @param srcFlag
      * @param event
      */
-    public ExportPatcherUtil(String patchName, String webServerName, String exportPath, boolean srcFlag, AnActionEvent event) {
+    public ExportPatcherUtil(String patchName, String webServerName, String exportPath, boolean srcFlag,boolean cloudFlag, AnActionEvent event) {
         this.event = event;
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
@@ -90,6 +95,7 @@ public class ExportPatcherUtil {
         this.exportPath = exportPath + File.separator + "patch_" + dateStr;
         this.patchName = patchName;
         this.srcFlag = srcFlag;
+        this.cloudFlag = cloudFlag;
         if (StringUtils.isNotBlank(webServerName)) {
             if (!webServerName.startsWith(File.separator)) {
                 webServerName = File.separator + webServerName;
@@ -103,7 +109,7 @@ public class ExportPatcherUtil {
      *
      * @throws IOException
      */
-    public void exportPatcher() throws Exception {
+    public void exportPatcher(JProgressBar progressBar) throws Exception {
 
         //当前工程
         Project project = event.getProject();
@@ -138,6 +144,14 @@ public class ExportPatcherUtil {
             }
         }
 
+        //进度条设定
+        int allCount = 0;
+        for (String key : modulePathMap.keySet()) {
+            allCount += modulePathMap.get(key).size();
+        }
+        progressBar.setMinimum(0);
+        progressBar.setMaximum(allCount);
+
         //收集导出的文件
         Set<String> classNameSet = new HashSet<>();
         Set<String> moduleSet = new HashSet<>();
@@ -152,23 +166,17 @@ public class ExportPatcherUtil {
             CompilerModuleExtension instance = CompilerModuleExtension.getInstance(module);
             VirtualFile outPath = instance.getCompilerOutputPath();
             if (outPath == null) {
-                throw new BusinessException("please set output folder or rebuild module !\n module:" + moduleName);
+                throw new BusinessException("please set output folder or rebuild module ! module:" + moduleName);
             }
             String compilerOutputUrl = outPath.getPath();
             String ncModuleName = getNCModuleName(module);
 
-            int i = 1;
             for (String fileUrl : fileUrlSet) {
                 File fromFile = new File(fileUrl);
                 String fileName = fromFile.getName();
                 if (fileName.endsWith(TYPE_JAVA)) {//导出java文件
                     boolean flag = exportJava(moduleName, ncModuleName, compilerOutputUrl, fromFile);
-                    if(!flag){
-                        continue;
-                    }
-                    //收集文件名，用于创建nmc日志
-                    if (fileUrl.split(Matcher.quoteReplacement(PATH_SRC)).length != 2) {
-                        //不在src下的不导出
+                    if (!flag) {
                         continue;
                     }
                     String classPath = fileUrl.split(Matcher.quoteReplacement(PATH_SRC))[1];
@@ -195,8 +203,8 @@ public class ExportPatcherUtil {
                 } else if (fileName.endsWith(TYPE_PROPERTIES)) {//导出多语文件
                     exportProperties(moduleName, fromFile);
                 }
-                System.out.println("output :" + i + " " + fileUrl);
-                i++;
+                progressBar.setValue(count);
+                System.out.println("count : " + fileUrlSet.size() + ",output :" + count + " " + fileUrl);
                 count++;
             }
             System.out.println("......finished,module: " + moduleName + " total:" + fileUrlSet.size() + "......");
@@ -206,9 +214,9 @@ public class ExportPatcherUtil {
                 moduleSet.add(ncModuleName);
             }
         }
-        moduleIndex = moduleIndex - 1 ;
-        count = count -1 ;
-        System.out.println("............finished all ,module count : " +moduleIndex+ " total:" + count + ".............");
+        moduleIndex = moduleIndex - 1;
+        count = count - 1;
+        System.out.println("............finished all ,module count : " + moduleIndex + " total:" + count + ".............");
         //创建ncm日志文件,只有ncccloud和ncchr的代码创建
         if (webServerName.endsWith("nccloud") || webServerName.endsWith("ncchr")) {
             //修改模块包含对应的web服务
@@ -263,8 +271,20 @@ public class ExportPatcherUtil {
 
         //输出install
         File installFile = new File(exportPath + File.separator + "installpatch.xml");
+        String s = "" ;
+        if(!cloudFlag){
+            s = "<copy>\n" +
+                    "        <from>/replacement/modules/</from>\n" +
+                    "        <to>/modules/</to>\n" +
+                    "    </copy>\n" +
+                    "    <copy>\n" +
+                    "        <from>/replacement/hotwebs/</from>\n" +
+                    "        <to>/hotwebs/</to>\n" +
+                    "    </copy>";
+        }
         template = util.readTemplate("installpatch.xml");
-        util.outFile(installFile, template, "UTF-8", false);
+        content = MessageFormat.format(template,s);
+        util.outFile(installFile, content, "UTF-8", false);
         //输出metadata
         String modifyClasses = "";
         for (String className : classNameSet) {
@@ -443,10 +463,14 @@ public class ExportPatcherUtil {
                 className = className.replace(PATH_PUBLIC, "");
                 javaName = javaName.replace(PATH_PUBLIC, "");
                 toPath = modulePath + PATH_CLASSES;
+                cloudFlag = false ;//这个参数决定了installpatcher文件中有没有copy标签。
+                // 经验证，只有client补丁的时候，没有copy标签。所以这里判断只要进来public和private，就认为不是云原声
             } else if (patchPath.contains(PATH_PRIVATE)) {
                 className = className.replace(PATH_PRIVATE, "");
                 javaName = javaName.replace(PATH_PRIVATE, "");
                 toPath = modulePath + PATH_META_INF + PATH_CLASSES;
+                cloudFlag = false ;//这个参数决定了installpatcher文件中有没有copy标签。
+                // 经验证，只有client补丁的时候，没有copy标签。所以这里判断只要进来public和private，就认为不是云原声
             }
         } else if (webServerName.contains("ncchr")) {
             //ncchr补丁，支持云管家
@@ -461,7 +485,7 @@ public class ExportPatcherUtil {
             toPath = exportPath + webServerName + PATH_WEB_INF + PATH_CLASSES;
         }
         if (fromFile.lastModified() > new File(compilerOutputUrl + className).lastModified()) {
-            throw new BusinessException(className.substring(1).replace(File.separator, ".") + " is old,\n please rebuild : " + moduleName);
+            throw new BusinessException(className.substring(1).replace(File.separator, ".") + " is old, please rebuild : " + moduleName);
         }
         //输出补丁
         outPatcher(moduleName, compilerOutputUrl + className, toPath + className);
@@ -469,7 +493,7 @@ public class ExportPatcherUtil {
         if (srcFlag) {
             outPatcher(moduleName, fromFile.getPath(), toPath + javaName);
         }
-        return true ;
+        return true;
     }
 
     /**
@@ -489,7 +513,7 @@ public class ExportPatcherUtil {
                     getFileUrl(childFile.getPath(), fileUrlSet);
                 }
             } else {
-                if ((elementPath.endsWith(TYPE_JAVA) && elementPath.contains(PATH_SRC))|| elementPath.endsWith(TYPE_XML) || elementPath.endsWith(TYPE_UPM)
+                if ((elementPath.endsWith(TYPE_JAVA) && elementPath.contains(PATH_SRC)) || elementPath.endsWith(TYPE_XML) || elementPath.endsWith(TYPE_UPM)
                         || elementPath.endsWith(TYPE_BMF) || elementPath.endsWith(TYPE_BPF) || elementPath.endsWith(TYPE_PROPERTIES)) {
                     fileUrlSet.add(elementPath);
                 }

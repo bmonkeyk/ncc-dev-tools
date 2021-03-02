@@ -11,7 +11,7 @@ public class PropXml {
 
     private String xmlPath2 = "/ierp/bin/dbdriverset.xml";
 
-    private PropInfo loadPropInfo(String propfile) throws Exception {
+    public PropInfo loadPropInfo(String propfile) throws Exception {
         return (PropInfo) XMLToObject.getJavaObjectFromFile(propfile,
                 PropInfo.class, true);
     }
@@ -55,4 +55,5 @@ public class PropXml {
         return (DatabaseDriverSetInfo) XMLToObject.getJavaObjectFromFile(file,
                 DatabaseDriverSetInfo.class, true);
     }
+
 }

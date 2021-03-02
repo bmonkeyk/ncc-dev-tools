@@ -48,14 +48,18 @@
             <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
             <add-to-group group-id="Vcs.Log.ChangesBrowser.Popup" anchor="last"/>
         </action>
-        <action class="com.yingling.debug.action.NewServerApplicationAction" id="new server config"
-                text="new server config" description="new server config"/>
-        <action class="com.yingling.debug.action.NewClientApplicationAction" id="new client config"
-                text="new client config" description="new client config"/>
+<!--        <action id="publishMetaData" class="com.yingling.metadata.action.PublishMetaDataAction" text="发布元数据"-->
+<!--                description="发布元数据">-->
+<!--            <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>-->
+<!--        </action>-->
+        <action class="com.yingling.debug.action.NewServerApplicationAction" id="serverApplication"
+                text="server application" description="server application"/>
+        <action class="com.yingling.debug.action.NewClientApplicationAction" id="clientApplication"
+                text="client application" description="client application"/>
 
-        <group id="test" text="creat debug config" popup="true" description="creat debug config">
-            <reference id="new server config"/>
-            <reference id="new client config"/>
+        <group id="debug" text="调试..." popup="true" description="调试...">
+            <reference id="serverApplication"/>
+            <reference id="clientApplication"/>
             <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
         </group>
 
