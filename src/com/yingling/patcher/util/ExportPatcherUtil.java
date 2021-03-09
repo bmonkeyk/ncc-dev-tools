@@ -11,15 +11,12 @@ import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.pub.exception.BusinessException;
-import com.yingling.patcher.dialog.PatcherDialog;
 import com.yingling.util.ConfigureFileUtil;
 import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
@@ -28,7 +25,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
 import java.util.regex.Matcher;
 
 /**
@@ -65,6 +70,9 @@ public class ExportPatcherUtil {
     private final String TYPE_BPF = ".bpf";
     private final String TYPE_PROPERTIES = ".properties";
     private final String FILE_COMPONENT = "component.xml";
+    private final String TYPE_REST = ".rest";
+    private final String TYPE_OPENAPI_MD = ".md";
+    private final String PATH_OPENAPI = File.separator + "openapi";
 
 
     /**
@@ -76,7 +84,7 @@ public class ExportPatcherUtil {
     private String webServerName = File.separator + "nccloud";
     private String zipName = "";
     private boolean srcFlag = false;
-    private boolean cloudFlag = false ;
+    private boolean cloudFlag = false;
 
     /**
      * 补丁工具类构造方法
@@ -87,7 +95,7 @@ public class ExportPatcherUtil {
      * @param srcFlag
      * @param event
      */
-    public ExportPatcherUtil(String patchName, String webServerName, String exportPath, boolean srcFlag,boolean cloudFlag, AnActionEvent event) {
+    public ExportPatcherUtil(String patchName, String webServerName, String exportPath, boolean srcFlag, boolean cloudFlag, AnActionEvent event) {
         this.event = event;
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
@@ -196,12 +204,14 @@ public class ExportPatcherUtil {
                     classNameSet.add(className);
                 } else if (fileName.endsWith(TYPE_XML)) {//导出xml文件
                     exportXml(moduleName, ncModuleName, fromFile);
-                } else if (fileName.endsWith(TYPE_UPM)) {//upm文件
+                } else if (fileName.endsWith(TYPE_UPM) || fileName.endsWith(TYPE_REST)) {//upm文件
                     exportUpm(moduleName, ncModuleName, fromFile);
                 } else if (fileName.endsWith(TYPE_BMF) || fileName.endsWith(TYPE_BPF)) {//导出元数据文件
                     exportMetaFile(moduleName, ncModuleName, fromFile);
                 } else if (fileName.endsWith(TYPE_PROPERTIES)) {//导出多语文件
                     exportProperties(moduleName, fromFile);
+                } else if (fileName.endsWith(TYPE_OPENAPI_MD)){
+                    exportOpenApiMD(moduleName, fromFile);
                 }
                 progressBar.setValue(count);
                 System.out.println("count : " + fileUrlSet.size() + ",output :" + count + " " + fileUrl);
@@ -271,8 +281,8 @@ public class ExportPatcherUtil {
 
         //输出install
         File installFile = new File(exportPath + File.separator + "installpatch.xml");
-        String s = "" ;
-        if(!cloudFlag){
+        String s = "";
+        if (!cloudFlag) {
             s = "<copy>\n" +
                     "        <from>/replacement/modules/</from>\n" +
                     "        <to>/modules/</to>\n" +
@@ -283,7 +293,7 @@ public class ExportPatcherUtil {
                     "    </copy>";
         }
         template = util.readTemplate("installpatch.xml");
-        content = MessageFormat.format(template,s);
+        content = MessageFormat.format(template, s);
         util.outFile(installFile, content, "UTF-8", false);
         //输出metadata
         String modifyClasses = "";
@@ -373,12 +383,20 @@ public class ExportPatcherUtil {
             if (StringUtil.isNotEmpty(toPath)) {
                 outPatcher(moduleName, fromFile.getPath(), toPath + className);
             }
-            if (in != null) {
-                in.close();
-            }
+            in.close();
         }
     }
-
+    /**
+     * 导出openapi中的md描述文件
+     * @param moduleName
+     * @param fromFile
+     */
+    private void exportOpenApiMD(String moduleName, File fromFile) throws Exception {
+        String fileName = fromFile.getName();
+        String fromParentPath = fromFile.getParent();
+        String toPath = exportPath + PATH_REPLACEMENT + fromParentPath.split(Matcher.quoteReplacement(PATH_OPENAPI))[1];
+        outPatcher(moduleName, fromFile.getPath(), toPath);
+    }
     /**
      * 导出元数据文件
      *
@@ -463,13 +481,13 @@ public class ExportPatcherUtil {
                 className = className.replace(PATH_PUBLIC, "");
                 javaName = javaName.replace(PATH_PUBLIC, "");
                 toPath = modulePath + PATH_CLASSES;
-                cloudFlag = false ;//这个参数决定了installpatcher文件中有没有copy标签。
+                cloudFlag = false;//这个参数决定了installpatcher文件中有没有copy标签。
                 // 经验证，只有client补丁的时候，没有copy标签。所以这里判断只要进来public和private，就认为不是云原声
             } else if (patchPath.contains(PATH_PRIVATE)) {
                 className = className.replace(PATH_PRIVATE, "");
                 javaName = javaName.replace(PATH_PRIVATE, "");
                 toPath = modulePath + PATH_META_INF + PATH_CLASSES;
-                cloudFlag = false ;//这个参数决定了installpatcher文件中有没有copy标签。
+                cloudFlag = false;//这个参数决定了installpatcher文件中有没有copy标签。
                 // 经验证，只有client补丁的时候，没有copy标签。所以这里判断只要进来public和private，就认为不是云原声
             }
         } else if (webServerName.contains("ncchr")) {
@@ -505,7 +523,8 @@ public class ExportPatcherUtil {
     private void getFileUrl(String elementPath, Set<String> fileUrlSet) {
 
         if (elementPath.contains(PATH_SRC) || elementPath.contains(PATH_META_INF)
-                || elementPath.contains(PATH_METADATA) || elementPath.contains(PATH_RESOURCES)) {
+                || elementPath.contains(PATH_METADATA) || elementPath.contains(PATH_RESOURCES)
+                || (elementPath.contains(PATH_HOTWEBS) && elementPath.contains(PATH_OPENAPI))) {
             File file = new File(elementPath);
             if (file.isDirectory()) {
                 File[] childrenFile = file.listFiles();
@@ -514,7 +533,8 @@ public class ExportPatcherUtil {
                 }
             } else {
                 if ((elementPath.endsWith(TYPE_JAVA) && elementPath.contains(PATH_SRC)) || elementPath.endsWith(TYPE_XML) || elementPath.endsWith(TYPE_UPM)
-                        || elementPath.endsWith(TYPE_BMF) || elementPath.endsWith(TYPE_BPF) || elementPath.endsWith(TYPE_PROPERTIES)) {
+                        || elementPath.endsWith(TYPE_BMF) || elementPath.endsWith(TYPE_BPF) || elementPath.endsWith(TYPE_PROPERTIES)
+                        || elementPath.endsWith(TYPE_REST) || elementPath.endsWith(TYPE_OPENAPI_MD)) {
                     fileUrlSet.add(elementPath);
                 }
             }
@@ -537,9 +557,9 @@ public class ExportPatcherUtil {
 
         FileUtil.copy(from, to);
 
-        //静态类处理,静态工具了编译后回成为 类名+%1.class的样子
+        //静态类处理,静态工具了编译后会成为 类名+%1.class的样子
         String fileName = from.getName().substring(0, from.getName().length() - 6);//去掉.class
-        for (File f : from.getParentFile().listFiles()) {
+        for (File f : Objects.requireNonNull(from.getParentFile().listFiles())) {
             if (f.getName().startsWith(fileName + "$")) {
                 FileUtil.copy(f, new File(to.getParent() + File.separator + f.getName()));
             }
@@ -603,7 +623,7 @@ public class ExportPatcherUtil {
                     continue;
                 }
                 if (file.getPath().endsWith(PATH_META_INF) || file.getPath().endsWith(PATH_METADATA)
-                        || file.getPath().endsWith(PATH_RESOURCES) || file.getPath().endsWith(PATH_SRC)) {
+                        || file.getPath().endsWith(PATH_RESOURCES) || file.getPath().endsWith(PATH_SRC) || file.getPath().endsWith(PATH_HOTWEBS)) {
                     fileList.add(file.getPath());
                 }
             }
