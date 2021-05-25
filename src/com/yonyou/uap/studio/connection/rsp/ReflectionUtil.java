@@ -1,14 +1,14 @@
 package com.yonyou.uap.studio.connection.rsp;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 public class ReflectionUtil {
-    protected static Logger logger = LoggerFactory.getLogger(ReflectionUtil.class.getName());
+//    protected static Logger logger = LoggerFactory.getLogger(ReflectionUtil.class.getName());
 
     public static <T> T getProperty(Object obj, String property) {
         if (obj == null || property == null)
@@ -62,9 +62,9 @@ public class ReflectionUtil {
         try {
             field = clazz.getDeclaredField(property);
         } catch (SecurityException e) {
-            logger.error(e.getMessage(), e);
+//            logger.error(e.getMessage(), e);
         } catch (NoSuchFieldException e) {
-            logger.error(e.getMessage(), e);
+//            logger.error(e.getMessage(), e);
         }
         return field;
     }
@@ -74,20 +74,20 @@ public class ReflectionUtil {
         try {
             method = obj.getClass().getMethod(methodName, new Class[]{clazz});
         } catch (SecurityException e) {
-            logger.error(e.getMessage(), e);
+//            logger.error(e.getMessage(), e);
         } catch (NoSuchMethodException e) {
-            logger.error(e.getMessage(), e);
+//            logger.error(e.getMessage(), e);
         }
         if (method != null)
             try {
                 method.invoke(obj, new Object[]{value});
                 return true;
             } catch (IllegalArgumentException e) {
-                logger.error(e.getMessage(), e);
+//                logger.error(e.getMessage(), e);
             } catch (IllegalAccessException e) {
-                logger.error(e.getMessage(), e);
+//                logger.error(e.getMessage(), e);
             } catch (InvocationTargetException e) {
-                logger.error(e.getMessage(), e);
+//                logger.error(e.getMessage(), e);
             }
         return false;
     }
@@ -97,19 +97,19 @@ public class ReflectionUtil {
         try {
             method = obj.getClass().getMethod(methodName, new Class[0]);
         } catch (SecurityException e) {
-            logger.error(e.getMessage(), e);
+//            logger.error(e.getMessage(), e);
         } catch (NoSuchMethodException e) {
-            logger.error(e.getMessage(), e);
+//            logger.error(e.getMessage(), e);
         }
         if (method != null)
             try {
                 return method.invoke(obj, new Object[0]);
             } catch (IllegalArgumentException e) {
-                logger.error(e.getMessage(), e);
+//                logger.error(e.getMessage(), e);
             } catch (IllegalAccessException e) {
-                logger.error(e.getMessage(), e);
+//                logger.error(e.getMessage(), e);
             } catch (InvocationTargetException e) {
-                logger.error(e.getMessage(), e);
+//                logger.error(e.getMessage(), e);
             }
         return null;
     }

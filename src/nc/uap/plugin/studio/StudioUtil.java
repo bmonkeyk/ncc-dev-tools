@@ -1,13 +1,13 @@
 package nc.uap.plugin.studio;
 
 import com.yingling.extensions.service.NccEnvSettingService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+
 
 import java.io.*;
 
 public class StudioUtil {
-    protected static Logger logger = LoggerFactory.getLogger(StudioUtil.class.getName());
+//    protected static Logger logger = LoggerFactory.getLogger(StudioUtil.class.getName());
     private static NccEnvSettingService envSettingService = NccEnvSettingService.getInstance();
     private static final String UAPHOME_FOLDERNAME = "UAP";
 
@@ -45,10 +45,10 @@ public class StudioUtil {
             reader = new BufferedReader(new FileReader(langFile));
             return reader.readLine().trim();
         } catch (FileNotFoundException e) {
-            logger.error(e.getMessage(), e);
-            logger.error(e.getMessage(), e);
+//            logger.error(e.getMessage(), e);
+//            logger.error(e.getMessage(), e);
         } catch (IOException e) {
-            logger.error(e.getMessage(), e);
+//            logger.error(e.getMessage(), e);
         } finally {
             if (reader != null)
                 try {
@@ -69,17 +69,17 @@ public class StudioUtil {
             writer = new FileWriter(langFile);
             writer.write(lang);
         } catch (FileNotFoundException e) {
-            logger.error(e.getMessage(), e);
+//            logger.error(e.getMessage(), e);
             return false;
         } catch (IOException e) {
-            logger.error(e.getMessage(), e);
+//            logger.error(e.getMessage(), e);
             return false;
         } finally {
             if (writer != null)
                 try {
                     writer.close();
                 } catch (IOException e) {
-                    logger.error(e.getMessage(), e);
+//                    logger.error(e.getMessage(), e);
                 }
         }
         return true;

@@ -14,14 +14,14 @@ import org.apache.commons.lang.time.DateFormatUtils;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+
 
 import java.io.*;
 import java.util.*;
 
 public class DataDictionaryGeneratorFactory {
-    protected static Logger logger = LoggerFactory.getLogger(DataDictionaryGeneratorFactory.class.getName());
+//    protected static Logger logger = LoggerFactory.getLogger(DataDictionaryGeneratorFactory.class.getName());
     private static IDataDictionaryGenerator ddGenerator = new DataDictionaryGenerator();
 
     public static IDataDictionaryGenerator getInstance() {
@@ -139,14 +139,14 @@ public class DataDictionaryGeneratorFactory {
                     }
                 }
             } catch (Exception e) {
-                logger.error("生成PDM(" + pdmFile.getPath() + ")的数据字典失败。", e);
+//                logger.error("生成PDM(" + pdmFile.getPath() + ")的数据字典失败。", e);
                 throw new PDMParseRuntimeException("生成PDM(" + pdmFile.getPath() + ")的数据字典失败。");
             }
             String resourceDir = "D:/work/cc_workspace/huping_NC_DSGN_SDP5.6_dev_2/NC5_DSGN5.0_VOB/NC_DSGN_SDP/dbscript/nc/sdp/build/dbcreate/dd/resource";
             try {
                 FileUtils.copyDirectory(new File(resourceDir), ddRoot);
             } catch (IOException e) {
-                logger.error("拷贝资源文件(" + resourceDir + ")到(" + ddRoot + ")失败。", e);
+//                logger.error("拷贝资源文件(" + resourceDir + ")到(" + ddRoot + ")失败。", e);
                 throw new PDMParseRuntimeException("");
             }
         }
@@ -159,7 +159,7 @@ public class DataDictionaryGeneratorFactory {
             try {
                 this.ve.init(prop);
             } catch (Exception e) {
-                logger.error(e.getMessage(), e);
+//                logger.error(e.getMessage(), e);
                 throw new PDMParseRuntimeException("初始化VelocityEngine失败。");
             }
         }

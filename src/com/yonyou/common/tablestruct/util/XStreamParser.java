@@ -6,8 +6,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 import com.yonyou.common.tablestruct.model.InitDataCfg;
 import com.yonyou.common.tablestruct.model.MainTableCfg;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+
 
 import java.io.Closeable;
 import java.io.InputStream;
@@ -17,7 +17,7 @@ import java.util.List;
 
 public class XStreamParser {
 
-    protected static Logger logger = LoggerFactory.getLogger(XStreamParser.class.getName());
+//    protected static Logger logger = LoggerFactory.getLogger(XStreamParser.class.getName());
 
 
     private static void closeQuietly(Closeable closeable) {
@@ -34,7 +34,7 @@ public class XStreamParser {
             input = file.getInputStream();
             return getMainTableCfg(input);
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+//            logger.error(e.getMessage(), e);
         } finally {
             closeQuietly(input);
         }
@@ -50,7 +50,7 @@ public class XStreamParser {
             if (obj != null && obj instanceof MainTableCfg)
                 return (MainTableCfg) obj;
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+//            logger.error(e.getMessage(), e);
         }
         return null;
     }
@@ -73,7 +73,7 @@ public class XStreamParser {
         } catch (Exception e) {
             String message = MessageFormat.format(
                     "Parsing file {0} failed", new Object[]{file.getPath()});
-            logger.error(message + e.getMessage(), e);
+//            logger.error(message + e.getMessage(), e);
             throw e;
         } finally {
             closeQuietly(contents);

@@ -1,14 +1,14 @@
 package com.yingling.debug.action;
 
-import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.ui.Messages;
+import com.yingling.abs.AbstractAnAction;
 import com.yingling.debug.util.CreatApplicationConfigurationUtil;
 import org.jetbrains.annotations.NotNull;
 
-public class NewClientApplicationAction extends AnAction {
+public class NewClientApplicationAction extends AbstractAnAction {
     @Override
-    public void actionPerformed(@NotNull AnActionEvent event) {
+    public void doAction(@NotNull AnActionEvent event) {
         String message = "success";
         try {
             CreatApplicationConfigurationUtil.createApplicationConfiguration(event, false);
@@ -17,5 +17,10 @@ public class NewClientApplicationAction extends AnAction {
             message = e.getMessage();
             Messages.showInfoMessage(message, "Error");
         }
+    }
+
+    @Override
+    public void update(@NotNull AnActionEvent e) {
+        e.getPresentation().setEnabled(isNCModule(e));
     }
 }

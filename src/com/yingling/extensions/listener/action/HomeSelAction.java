@@ -3,7 +3,7 @@ package com.yingling.extensions.listener.action;
 import com.yingling.extensions.component.NccDevSettingDlg;
 import com.yingling.extensions.listener.AbstractButtonAction;
 import com.yingling.extensions.service.NccEnvSettingService;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;

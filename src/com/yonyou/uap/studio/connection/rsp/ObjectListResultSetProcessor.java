@@ -1,7 +1,7 @@
 package com.yonyou.uap.studio.connection.rsp;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+
 
 import java.lang.reflect.Field;
 import java.sql.ResultSet;
@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ObjectListResultSetProcessor<T> extends Object implements IResultSetProcessor<List<T>> {
-    protected static Logger logger = LoggerFactory.getLogger(ObjectListResultSetProcessor.class.getName());
+//    protected static Logger logger = LoggerFactory.getLogger(ObjectListResultSetProcessor.class.getName());
     private Class<T> clazz;
 
     public ObjectListResultSetProcessor(Class<T> clazz) {
@@ -42,10 +42,8 @@ public class ObjectListResultSetProcessor<T> extends Object implements IResultSe
                     }
                 }
                 list.add(obj);
-            } catch (InstantiationException e) {
-                logger.error(e.getMessage(), e);
-            } catch (IllegalAccessException e) {
-                logger.error(e.getMessage(), e);
+            } catch (InstantiationException | IllegalAccessException e) {
+//                logger.error(e.getMessage(), e);
             }
         }
         return list;
@@ -72,7 +70,7 @@ public class ObjectListResultSetProcessor<T> extends Object implements IResultSe
                     ReflectionUtil.setProperty(obj, field.getName(), intValue);
                 }
             } catch (NumberFormatException e) {
-                logger.error(e.getMessage(), e);
+//                logger.error(e.getMessage(), e);
             }
         } else {
             ReflectionUtil.setProperty(obj, field.getName(), value);

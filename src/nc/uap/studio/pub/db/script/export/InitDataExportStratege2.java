@@ -10,8 +10,8 @@ import nc.uap.studio.pub.db.query.SqlQueryResultSet;
 import nc.uap.studio.pub.util.PrintIOUtil;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+
 
 import java.io.*;
 import java.sql.Blob;
@@ -19,7 +19,7 @@ import java.sql.SQLException;
 import java.util.*;
 
 public class InitDataExportStratege2 implements IScriptExportStratege, IExportConst {
-    protected static Logger logger = LoggerFactory.getLogger(PrintIOUtil.class.getName());
+//    protected static Logger logger = LoggerFactory.getLogger(PrintIOUtil.class.getName());
     public static final String FLODER_BUSINESS = "business";
 
     public static final String FOLDER_ML = "dbml";
@@ -93,7 +93,7 @@ public class InitDataExportStratege2 implements IScriptExportStratege, IExportCo
             IPkConstraint pkConstraint = currentTable.getPkConstraint();
             if (pkConstraint == null || pkConstraint.getColumns() == null ||
                     pkConstraint.getColumns().size() == 0) {
-                logger.error(currentTable.getName() + "表不存在主键，无法导出脚本。");
+//                logger.error(currentTable.getName() + "表不存在主键，无法导出脚本。");
                 return false;
             }
             String pkName = ((IColumn) pkConstraint.getColumns().get(0)).getName();
@@ -126,12 +126,12 @@ public class InitDataExportStratege2 implements IScriptExportStratege, IExportCo
                 if (currentTable.getPkConstraint() == null ||
                         currentTable.getPkConstraint().getColumns() == null ||
                         currentTable.getPkConstraint().getColumns().size() == 0) {
-                    logger.warn(currentTable.getName() + "表不存在主键，无法导出BLOB。");
+//                    logger.warn(currentTable.getName() + "表不存在主键，无法导出BLOB。");
                 } else if (currentTable.getPkConstraint().getColumns().size() == 1) {
                     generateBlobFile(currentTable, map, pkName, blobColumns,
                             scriptFolder.getAbsolutePath(), mapNo);
                 } else {
-                    logger.warn(currentTable.getName() + "表为复合主键，无法导出BLOB。");
+//                    logger.warn(currentTable.getName() + "表为复合主键，无法导出BLOB。");
                 }
             List<TableStructure> subTables = this.struct.getSubTables();
             for (TableStructure subStruct : subTables) {
@@ -160,11 +160,11 @@ public class InitDataExportStratege2 implements IScriptExportStratege, IExportCo
                 if (currentTable.getPkConstraint() == null ||
                         currentTable.getPkConstraint().getColumns() == null ||
                         currentTable.getPkConstraint().getColumns().size() == 0) {
-                    logger.error(currentTable.getName() + "表不存在主键，无法导出多语。");
+//                    logger.error(currentTable.getName() + "表不存在主键，无法导出多语。");
                 } else if (currentTable.getPkConstraint().getColumns().size() == 1) {
                     geneMLCSVFile(current, mlColumns);
                 } else {
-                    logger.error(currentTable.getName() + "表为复合主键，无法导出多语。");
+//                    logger.error(currentTable.getName() + "表为复合主键，无法导出多语。");
                 }
             if (current.getSubInserts() != null)
                 stack.addAll(current.getSubInserts());
@@ -211,7 +211,7 @@ public class InitDataExportStratege2 implements IScriptExportStratege, IExportCo
             isMultiPK = true;
         }
         if (isNoPK) {
-            logger.error(inserts.getTable().getName() + "表不存在主键，无法处理");
+//            logger.error(inserts.getTable().getName() + "表不存在主键，无法处理");
             return;
         }
         String foreignKey = struct.getForeignKey();
@@ -248,16 +248,16 @@ public class InitDataExportStratege2 implements IScriptExportStratege, IExportCo
                         .getTable());
                 if (blobColumns.size() > 0)
                     if (isNoPK) {
-                        logger.error(inserts.getTable().getName() + "表不存在主键，无法导出BLOB。");
+//                        logger.error(inserts.getTable().getName() + "表不存在主键，无法导出BLOB。");
                     } else if (isMultiPK) {
-                        logger.error(inserts.getTable().getName() + "表为复合主键，无法导出BLOB。");
+//                        logger.error(inserts.getTable().getName() + "表为复合主键，无法导出BLOB。");
                     } else {
                         generateBlobFile(inserts.getTable(), datas, pkKeys[0], blobColumns, scriptFolder.getAbsolutePath(), mapNo);
                     }
                 if (isNoPK) {
-                    logger.error(inserts.getTable().getName() + "表不存在主键，无法处理子表。");
+//                    logger.error(inserts.getTable().getName() + "表不存在主键，无法处理子表。");
                 } else if (isMultiPK) {
-                    logger.error(inserts.getTable().getName() + "表为复合主键，无法处理子表。");
+//                    logger.error(inserts.getTable().getName() + "表为复合主键，无法处理子表。");
                 } else {
                     List<TableStructure> subTables = struct
                             .getSubTables();
@@ -306,7 +306,7 @@ public class InitDataExportStratege2 implements IScriptExportStratege, IExportCo
                             currentTable.getPkConstraint().getColumns() == null ||
                             currentTable.getPkConstraint().getColumns()
                                     .size() == 0) {
-                        logger.error(currentTable.getName() + "表不存在主键，无法导出BLOB。");
+//                        logger.error(currentTable.getName() + "表不存在主键，无法导出BLOB。");
                     } else if (currentTable.getPkConstraint().getColumns()
                             .size() == 1) {
                         IColumn pkColumn = (IColumn) currentTable.getPkConstraint()
@@ -316,7 +316,7 @@ public class InitDataExportStratege2 implements IScriptExportStratege, IExportCo
                         geneBlobFile(rs, pkColumn.getName(), blobColumns,
                                 fileFolderPath, mapFileNo);
                     } else {
-                        logger.error(currentTable.getName() + "表为复合主键，无法导出BLOB。");
+//                        logger.error(currentTable.getName() + "表为复合主键，无法导出BLOB。");
                     }
             }
             if (this.mlTableInfo != null) {
@@ -327,7 +327,7 @@ public class InitDataExportStratege2 implements IScriptExportStratege, IExportCo
                             currentTable.getPkConstraint().getColumns() == null ||
                             currentTable.getPkConstraint().getColumns()
                                     .size() == 0) {
-                        logger.error(currentTable.getName() + "表不存在主键，无法导出多语。");
+//                        logger.error(currentTable.getName() + "表不存在主键，无法导出多语。");
                         continue;
                     }
                     if (currentTable.getPkConstraint().getColumns()
@@ -335,7 +335,7 @@ public class InitDataExportStratege2 implements IScriptExportStratege, IExportCo
                         geneMLCSVFile(current, mlColumns);
                         continue;
                     }
-                    logger.error(currentTable.getName() + "表为复合主键，无法导出多语。");
+//                    logger.error(currentTable.getName() + "表为复合主键，无法导出多语。");
                 }
             }
         }
@@ -384,10 +384,10 @@ public class InitDataExportStratege2 implements IScriptExportStratege, IExportCo
                 csvWriter.println();
             }
         } catch (FileNotFoundException e) {
-            logger.error(e.getMessage(), e);
+//            logger.error(e.getMessage(), e);
             return false;
         } catch (UnsupportedEncodingException e) {
-            logger.error(e.getMessage(), e);
+//            logger.error(e.getMessage(), e);
             return false;
         } finally {
             IOUtils.closeQuietly(csvWriter);
@@ -407,7 +407,7 @@ public class InitDataExportStratege2 implements IScriptExportStratege, IExportCo
         try {
             btTableName = tableName.getBytes("utf-8");
         } catch (UnsupportedEncodingException e) {
-            logger.error("生成Blob文件时发生错误：转换表[" + tableName + "]名称为字节数组时发生错误。", e);
+//            logger.error("生成Blob文件时发生错误：转换表[" + tableName + "]名称为字节数组时发生错误。", e);
             throw new DatabaseRuntimeException("生成Blob文件时发生错误：转换表[" + tableName + "]名称为字节数组时发生错误。", e);
         }
         if (btTableName.length > 40)
@@ -418,7 +418,7 @@ public class InitDataExportStratege2 implements IScriptExportStratege, IExportCo
         try {
             btPKColumnName = pkColumnName.getBytes("utf-8");
         } catch (UnsupportedEncodingException e) {
-            logger.error("生成Blob文件时发生错误：转换表[" + tableName + "]的主键[" + pkColumnName + "]名称为字节数组时发生错误。", e);
+//            logger.error("生成Blob文件时发生错误：转换表[" + tableName + "]的主键[" + pkColumnName + "]名称为字节数组时发生错误。", e);
             throw new DatabaseRuntimeException("生成Blob文件时发生错误：转换表[" + tableName + "]的主键[" + pkColumnName + "]名称为字节数组时发生错误。", e);
         }
         if (btPKColumnName.length > 40)
@@ -438,7 +438,7 @@ public class InitDataExportStratege2 implements IScriptExportStratege, IExportCo
             try {
                 btBlobColumnName = aryBlobColumnName[i].getBytes("utf-8");
             } catch (UnsupportedEncodingException e) {
-                logger.error("生成Blob文件时发生错误：转换表[" + tableName + "]的Blob字段[" + aryBlobColumnName[i] + "]名称为字节数组时发生错误。", e);
+//                logger.error("生成Blob文件时发生错误：转换表[" + tableName + "]的Blob字段[" + aryBlobColumnName[i] + "]名称为字节数组时发生错误。", e);
                 throw new DatabaseRuntimeException("生成Blob文件时发生错误：转换表[" + tableName + "]的Blob字段[" + aryBlobColumnName[i] + "]名称为字节数组时发生错误。", e);
             }
             System.arraycopy(btBlobColumnName, 0, outputBlobColumnName, 0,
@@ -486,7 +486,7 @@ public class InitDataExportStratege2 implements IScriptExportStratege, IExportCo
                                 }
                             } else {
                                 String errorInfo = "获取表[" + tableName + "]的Image字段[" + aryBlobColumnName[jj] + "]的值时发生类型不是Iamge错误";
-                                logger.error(errorInfo);
+//                                logger.error(errorInfo);
                                 throw new DatabaseRuntimeException(
                                         errorInfo);
                             }
@@ -503,7 +503,7 @@ public class InitDataExportStratege2 implements IScriptExportStratege, IExportCo
                                         blobByte = blobValue.getBytes(1L, (int) blobValue.length());
                                     } catch (SQLException e) {
                                         String errorInfo = "获取表[" + tableName + "]的Blob字段[" + aryBlobColumnName[jj] + "]的值时发生错误：" + e.getMessage();
-                                        logger.error(errorInfo, e);
+//                                        logger.error(errorInfo, e);
                                         throw new DatabaseRuntimeException(errorInfo);
                                     }
                                     out.writeInt(blobByte.length);
@@ -511,20 +511,20 @@ public class InitDataExportStratege2 implements IScriptExportStratege, IExportCo
                                 }
                             } else {
                                 String errorInfo = "获取表[" + tableName + "]的Blob字段[" + aryBlobColumnName[jj] + "]的值时发生类型不是Blob错误";
-                                logger.error(errorInfo);
+//                                logger.error(errorInfo);
                                 throw new DatabaseRuntimeException(
                                         errorInfo);
                             }
                         } else if (blobColumn.getTypeName()
                                 .equalsIgnoreCase("blob(128m)")) {
                             String errorInfo = "系统暂不支持对DB2数据库表[" + tableName + "]的二进制字段[" + aryBlobColumnName[jj] + "]数据导出";
-                            logger.error(errorInfo);
+//                            logger.error(errorInfo);
                             throw new DatabaseRuntimeException(errorInfo);
                         }
                         out.flush();
                     }
                 } catch (IOException e) {
-                    logger.error("写入文件" + blobFileName + "失败。", e);
+//                    logger.error("写入文件" + blobFileName + "失败。", e);
                     throw new DatabaseRuntimeException("写入文件" + blobFileName + "失败。");
                 } finally {
                     IOUtils.closeQuietly(fout);

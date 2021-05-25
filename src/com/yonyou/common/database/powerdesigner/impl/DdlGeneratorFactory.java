@@ -12,8 +12,8 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.exception.ParseErrorException;
 import org.apache.velocity.exception.ResourceNotFoundException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+
 
 import java.io.IOException;
 import java.io.Writer;
@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.Properties;
 
 public class DdlGeneratorFactory {
-    protected static Logger logger = LoggerFactory.getLogger(DdlGeneratorFactory.class.getName());
+//    protected static Logger logger = LoggerFactory.getLogger(DdlGeneratorFactory.class.getName());
     private static final String CREATE_TABLE_TEMPL_NAME = "createTable.templ";
 
     private static final String CREATE_INDEX_TEMPL_NAME = "createIndex.templ";
@@ -112,13 +112,13 @@ public class DdlGeneratorFactory {
                 vc.put("indexs", indexs);
                 template.merge(vc, writer);
             } catch (ResourceNotFoundException e) {
-                logger.error("Generating index sql failed.", e);
+//                logger.error("Generating index sql failed.", e);
                 throw new PDMParseRuntimeException(MessageFormat.format("Template file {0} doesn't exist.", new Object[]{this.createIndexTempl}));
             } catch (ParseErrorException e) {
-                logger.error("Generating index sql failed.", e);
+//                logger.error("Generating index sql failed.", e);
                 throw new PDMParseRuntimeException(MessageFormat.format("Parsing template file {0} failed.", new Object[]{this.createIndexTempl}));
             } catch (Exception e) {
-                logger.error("Generating index sql failed.", e);
+//                logger.error("Generating index sql failed.", e);
                 throw new PDMParseRuntimeException(MessageFormat.format("Parsing template file {0} failed.", new Object[]{this.createIndexTempl}));
             }
         }
@@ -130,13 +130,13 @@ public class DdlGeneratorFactory {
                 vc.put("tables", tables);
                 template.merge(vc, writer);
             } catch (ResourceNotFoundException e) {
-                logger.error("Generating sql of creating table failed.", e);
+//                logger.error("Generating sql of creating table failed.", e);
                 throw new PDMParseRuntimeException(MessageFormat.format("Template file {0} doesn't exist.", new Object[]{this.createTableTempl}));
             } catch (ParseErrorException e) {
-                logger.error("Generating sql of creating table failed.", e);
+//                logger.error("Generating sql of creating table failed.", e);
                 throw new PDMParseRuntimeException(MessageFormat.format("Parsing template file {0} failed.", new Object[]{this.createTableTempl}));
             } catch (Exception e) {
-                logger.error("Generating sql of creating table failed.", e);
+//                logger.error("Generating sql of creating table failed.", e);
                 throw new PDMParseRuntimeException(MessageFormat.format("Parsing template file {0} failed.", new Object[]{this.createTableTempl}));
             }
         }
@@ -148,13 +148,13 @@ public class DdlGeneratorFactory {
                 vc.put("views", views);
                 template.merge(vc, writer);
             } catch (ResourceNotFoundException e) {
-                logger.error("Generating view sql failed.", e);
+//                logger.error("Generating view sql failed.", e);
                 throw new PDMParseRuntimeException(MessageFormat.format("Template file {0} doesn't exist.", new Object[]{this.createViewTempl}));
             } catch (ParseErrorException e) {
-                logger.error("Generating view sql failed.", e);
+//                logger.error("Generating view sql failed.", e);
                 throw new PDMParseRuntimeException(MessageFormat.format("Parsing template file {0} failed.", new Object[]{this.createViewTempl}));
             } catch (Exception e) {
-                logger.error("Generating view sql failed.", e);
+//                logger.error("Generating view sql failed.", e);
                 throw new PDMParseRuntimeException(MessageFormat.format("Parsing template file {0} failed.", new Object[]{this.createViewTempl}));
             }
         }
@@ -166,13 +166,13 @@ public class DdlGeneratorFactory {
                 vc.put("fkConstraints", constraints);
                 template.merge(vc, writer);
             } catch (ResourceNotFoundException e) {
-                logger.error("Genertating foreign key constraint sql failed.", e);
+//                logger.error("Genertating foreign key constraint sql failed.", e);
                 throw new PDMParseRuntimeException(MessageFormat.format("Template file {0} doesn't exist.", new Object[]{this.referenceTempl}));
             } catch (ParseErrorException e) {
-                logger.error("Genertating foreign key constraint sql failed.", e);
+//                logger.error("Genertating foreign key constraint sql failed.", e);
                 throw new PDMParseRuntimeException(MessageFormat.format("Parsing template file {0} failed.", new Object[]{this.referenceTempl}));
             } catch (Exception e) {
-                logger.error("Genertating foreign key constraint sql failed.", e);
+//                logger.error("Genertating foreign key constraint sql failed.", e);
                 throw new PDMParseRuntimeException(MessageFormat.format("Parsing template file {0} failed.", new Object[]{this.referenceTempl}));
             }
         }
@@ -185,7 +185,7 @@ public class DdlGeneratorFactory {
             try {
                 this.ve.init(prop);
             } catch (Exception e) {
-                logger.error("", e);
+//                logger.error("", e);
                 throw new PDMParseRuntimeException("Initializing VelocityEngine failed.");
             }
         }

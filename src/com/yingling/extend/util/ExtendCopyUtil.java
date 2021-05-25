@@ -5,7 +5,6 @@ import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.yingling.extensions.service.NccEnvSettingService;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -38,15 +37,13 @@ public class ExtendCopyUtil {
      * @return
      */
     private List<String> getAuthFileList(VirtualFile[] selectFile) {
-        List<String> list = new ArrayList<>();
         Set<String> fileUrlSet = new HashSet<>();
         if (null != selectFile) {
             for (VirtualFile file : selectFile) {
                 getFileUrl(file.getPath(), fileUrlSet);
             }
         }
-        list.addAll(fileUrlSet);
-        return list;
+        return new ArrayList<>(fileUrlSet);
     }
 
     /**

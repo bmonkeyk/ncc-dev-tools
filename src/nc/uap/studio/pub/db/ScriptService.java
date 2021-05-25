@@ -8,8 +8,8 @@ import nc.uap.studio.pub.db.query.SqlQueryResultSet;
 import nc.uap.studio.pub.db.script.export.IScriptExportStratege;
 import nc.uap.studio.pub.db.script.export.SqlQueryInserts;
 import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.Stack;
 
 public class ScriptService implements IScriptService {
-    protected static Logger logger = LoggerFactory.getLogger(ScriptService.class.getName());
+//    protected static Logger logger = LoggerFactory.getLogger(ScriptService.class.getName());
     public static final String SQL_SERPERATOR = String.valueOf(IOUtils.LINE_SEPARATOR) + "go" +
             IOUtils.LINE_SEPARATOR;
 
@@ -137,7 +137,7 @@ public class ScriptService implements IScriptService {
                                     blobBytes);
                             statement.setBinaryStream(1, iis, blobBytes.length);
                         } else {
-                            logger.error("暂不支持的类型。");
+//                            logger.error("暂不支持的类型。");
                             ConnectionService.closeQuietly(conn, statement, null);
                             continue;
                         }
@@ -147,7 +147,7 @@ public class ScriptService implements IScriptService {
                         }
                         statement.execute();
                     } catch (SQLException e) {
-                        logger.error(e.getMessage(), e);
+//                        logger.error(e.getMessage(), e);
                         ConnectionService.closeQuietly(conn, statement, null);
                     } finally {
                         ConnectionService.closeQuietly(conn, statement, null);

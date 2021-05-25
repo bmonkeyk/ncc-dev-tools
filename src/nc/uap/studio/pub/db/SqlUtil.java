@@ -12,8 +12,8 @@ import nc.uap.studio.pub.db.model.impl.Table;
 import nc.uap.studio.pub.db.query.IQueryInfo;
 import nc.uap.studio.pub.db.query.SqlQueryResultSet;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+
 
 import java.sql.*;
 import java.util.*;
@@ -25,7 +25,7 @@ public class SqlUtil {
 
     private static final String DB_TYPE_DB2 = "DB2";
 
-    protected static Logger logger = LoggerFactory.getLogger(SqlUtil.class.getName());
+//    protected static Logger logger = LoggerFactory.getLogger(SqlUtil.class.getName());
 
     public static ITable retrieveTable(String tableName, List<String> fkColNames, Connection conn) throws DatabaseRuntimeException {
         DatabaseMetaData metaData = null;
@@ -35,7 +35,7 @@ public class SqlUtil {
             dbType = metaData.getDatabaseProductName();
             userName = metaData.getUserName();
         } catch (SQLException e) {
-            logger.error("获取表" + tableName + "元数据出错。", e);
+//            logger.error("获取表" + tableName + "元数据出错。", e);
             throw new DatabaseRuntimeException("获取表" + tableName + "元数据出错。");
         }
         return retrieveTable(tableName, fkColNames, metaData, dbType, userName);
@@ -58,14 +58,14 @@ public class SqlUtil {
                 nPos++;
             }
         } catch (SQLException e) {
-            logger.error("获取表" + tableName + "主键信息出错。", e);
+//            logger.error("获取表" + tableName + "主键信息出错。", e);
             throw new DatabaseRuntimeException("获取表" + tableName + "主键信息出错。");
         } finally {
             if (pkRs != null)
                 try {
                     pkRs.close();
                 } catch (SQLException e) {
-                    logger.error("Close result set error.", e);
+//                    logger.error("Close result set error.", e);
                 }
         }
         List<String> pkColNames = new ArrayList<String>(nPos);
@@ -121,14 +121,14 @@ public class SqlUtil {
             pkConstraint.getColumns().addAll(Arrays.asList(pkCols));
             return table;
         } catch (SQLException sQLException) {
-            logger.error(String.format("获取表%s列信息出错。", new Object[]{tableName}));
+//            logger.error(String.format("获取表%s列信息出错。", new Object[]{tableName}));
             throw new DatabaseRuntimeException(String.format("获取表%s列信息出错。", new Object[]{tableName}));
         } finally {
             if (colRs != null)
                 try {
                     colRs.close();
                 } catch (SQLException e) {
-                    logger.error("Close result set error.", e);
+//                    logger.error("Close result set error.", e);
                 }
         }
     }
@@ -157,7 +157,7 @@ public class SqlUtil {
                 }
                 return sqlQueryResultSet;
             } catch (SQLException e) {
-                logger.error("数据库查询异常:", e);
+//                logger.error("数据库查询异常:", e);
                 throw new DatabaseRuntimeException("数据库查询异常，请检查查询条件是否有效:" + sql);
             } finally {
                 if (rs != null)

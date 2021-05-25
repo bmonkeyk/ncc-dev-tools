@@ -7,28 +7,25 @@ import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.yingling.abs.AbstractAnAction;
 import com.yonyou.common.database.powerdesigner.impl.DbCreateServiceImpl;
 import com.yonyou.common.database.powerdesigner.itf.IDbCreateService;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 
-public class ExportDBCreateScriptsAction extends AnAction {
+public class ExportDBCreateScriptsAction extends AbstractAnAction {
 
     private static final IDbCreateService dbCreateService = new DbCreateServiceImpl();
 
     @Override
-    public void actionPerformed(@NotNull AnActionEvent e) {
+    public void doAction(@NotNull AnActionEvent e) {
 
         Project project = e.getData(PlatformDataKeys.PROJECT);
         VirtualFile pdmFile = e.getData(CommonDataKeys.VIRTUAL_FILE);
-        if (pdmFile.isDirectory()) {
-            return;
-        }
-        if (!pdmFile.getName().endsWith(".pdm")) {
-            return;
-        }
+
         //向上找三层到script目录
+        assert pdmFile != null;
         VirtualFile script = pdmFile.getParent().getParent().getParent();
         VirtualFile folder = getChildFile(script, "dbcreate");
         if (folder == null || !folder.exists()) {
@@ -58,5 +55,13 @@ public class ExportDBCreateScriptsAction extends AnAction {
             }
         }
         return null;
+    }
+
+    @Override
+    public void update(@NotNull AnActionEvent e) {
+        VirtualFile selectFile = getSelectFile(e);
+        if (selectFile.isDirectory() || !selectFile.getName().endsWith(".pdm")) {
+            e.getPresentation().setEnabled(false);
+        }
     }
 }

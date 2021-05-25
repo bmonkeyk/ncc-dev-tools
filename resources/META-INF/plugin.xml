@@ -1,12 +1,12 @@
 <idea-plugin>
     <id>com.yonyou.ncchr.plugin.ncc-dev-tools</id>
     <name>ncc-dev-tools</name>
-    <version>2.0</version>
-    <vendor email="liuchaol@yonyou.com" url="http://www.yonyou.com">用友网络科技股份有限公司NCC HR 开发部</vendor>
+    <version>3.0.0</version>
+    <vendor email="bmonkeyk@126.com" url="http://www.yonyou.com">业余开发部</vendor>
 
-    <description>###ncc类路径设置;###ncc模块组件新增;###ncc补丁导出;ncc预置脚本导出;ncc建库脚本导出;ncc数据源设置###</description>
+    <description>[使用方法](http://note.youdao.com/noteshare?id=4485948a8170316f3967095b7697bb28)</description>
 
-    <change-notes>###ncc类路径设置;###ncc模块组件新增;###ncc补丁导出;ncc预置脚本导出;ncc建库脚本导出;ncc数据源设置###</change-notes>
+    <change-notes>适配最新版idea,version:2021.1.1</change-notes>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
     <idea-version since-build="173.0"/>
@@ -16,10 +16,10 @@
     <depends>component.intellij.modules.lang</depends>
     -->
     <actions>
-        <action id="add ncc module" class="com.yingling.module.action.CreatNewModuleAction" text="MDE module">
+        <action id="add ncc module" class="com.yingling.module.action.CreateNewModuleAction" text="MDE module">
             <add-to-group group-id="NewGroup" relative-to-action="NewModule" anchor="before"/>
         </action>
-        <action id="add ncc componet" class="com.yingling.module.action.CreatComponetAction" text="MDE componet">
+        <action id="add ncc componet" class="com.yingling.module.action.CreateComponentAction" text="MDE componet">
             <add-to-group group-id="NewGroup" relative-to-action="NewModule" anchor="before"/>
         </action>
         <!-- Add your actions here -->

@@ -1,8 +1,8 @@
 package nc.uap.studio.pub.util;
 
 import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -12,7 +12,7 @@ import java.util.*;
 
 public class PrintIOUtil {
 
-    protected static Logger logger = LoggerFactory.getLogger(PrintIOUtil.class.getName());
+//    protected static Logger logger = LoggerFactory.getLogger(PrintIOUtil.class.getName());
 
     private Map<String, List<String>> sqlMap = new HashMap();
 
@@ -42,7 +42,7 @@ public class PrintIOUtil {
                     for (String sql : sqlList)
                         writer.println(sql);
                 } catch (Exception e) {
-                    logger.error(e.getMessage(), e);
+//                    logger.error(e.getMessage(), e);
                     IOUtils.closeQuietly(writer);
                 } finally {
                     IOUtils.closeQuietly(writer);

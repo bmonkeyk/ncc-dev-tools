@@ -2,14 +2,14 @@ package nc.uap.studio.pub.db.script.init;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+
 
 import java.io.*;
 import java.util.Properties;
 
 public class DbRecordSqlFileCfg {
-    protected static Logger logger = LoggerFactory.getLogger(DbRecordSqlFileCfg.class.getName());
+//    protected static Logger logger = LoggerFactory.getLogger(DbRecordSqlFileCfg.class.getName());
     public static final String MODULE_QUERYENGINE_FILE_NAME = "QE.properties";
 
     public static final String MODULE_FREEREPORT_FILE_NAME = "FR.properties";
@@ -142,10 +142,10 @@ public class DbRecordSqlFileCfg {
             prop = new Properties();
             prop.load(is);
         } catch (FileNotFoundException e) {
-            logger.error("文件" + fileName + "不存在。", e);
+//            logger.error("文件" + fileName + "不存在。", e);
             throw new RuntimeException("文件" + fileName + "不存在。");
         } catch (IOException e) {
-            logger.error("读取文件" + fileName + "失败。", e);
+//            logger.error("读取文件" + fileName + "失败。", e);
             throw new RuntimeException("读取文件" + fileName + "失败。");
         } finally {
             IOUtils.closeQuietly(is);

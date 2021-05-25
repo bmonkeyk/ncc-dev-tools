@@ -6,8 +6,8 @@ import com.yonyou.common.tablestruct.model.MainTableCfg;
 import com.yonyou.common.tablestruct.service.ICommonTableStructQueryService;
 import com.yonyou.common.tablestruct.util.XStreamParser;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+
 
 import java.io.*;
 import java.util.ArrayList;
@@ -16,7 +16,7 @@ import java.util.Properties;
 import java.util.Stack;
 
 public class URLZipFileQueryService implements ICommonTableStructQueryService {
-    protected static Logger logger = LoggerFactory.getLogger(URLZipFileQueryService.class.getName());
+//    protected static Logger logger = LoggerFactory.getLogger(URLZipFileQueryService.class.getName());
     private static final String DEFAULT_URL = "http://20.10.80.128:12345/cfgs/tables.zip";
 
     public static final String CACHE_FOLDER_NAME = ".tables";
@@ -96,7 +96,7 @@ public class URLZipFileQueryService implements ICommonTableStructQueryService {
                         if (mtCfg != null)
                             this.cfgs.add(mtCfg);
                     } catch (IOException e) {
-                        logger.error(e.getMessage(), e);
+//                        logger.error(e.getMessage(), e);
                         if (input != null)
                             try {
                                 input.close();

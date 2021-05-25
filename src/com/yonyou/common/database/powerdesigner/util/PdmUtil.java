@@ -7,8 +7,8 @@ import nc.uap.studio.pub.db.model.IColumn;
 import nc.uap.studio.pub.db.model.impl.*;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -21,7 +21,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class PdmUtil {
-    protected static Logger logger = LoggerFactory.getLogger(DataDictionaryGeneratorFactory.class.getName());
+//    protected static Logger logger = LoggerFactory.getLogger(DataDictionaryGeneratorFactory.class.getName());
     private static final String PD_FILE_TYPE = "PDM_DATA_MODEL_XML";
 
     private static final String DB_SQLSERVER_2005 = "Microsoft SQL Server 2005";
@@ -100,7 +100,7 @@ public class PdmUtil {
         }
         List<Pdm.ViewInfo> viewInfos = parseViews(modelEle, fileName);
         pdm.getViews().addAll(viewInfos);
-        logger.error("Total millis cost at parsing pdm(" + fileName + "): " + (System.currentTimeMillis() - start));
+//        logger.error("Total millis cost at parsing pdm(" + fileName + "): " + (System.currentTimeMillis() - start));
         return pdm;
     }
 
@@ -116,7 +116,7 @@ public class PdmUtil {
             table.setName(DomUtil.findChildContent(tableNode, "a:Code"));
             List<Node> colNodes = DomUtil.findNestedChilds(tableNode, "c:Columns/o:Column");
             if (colNodes.isEmpty()) {
-                logger.error("PDM(" + pdmFileName + ")中表(" + table.getName() + ")未定义列。");
+//                logger.error("PDM(" + pdmFileName + ")中表(" + table.getName() + ")未定义列。");
                 continue;
             }
             boolean success = true;
@@ -127,9 +127,9 @@ public class PdmUtil {
                 col.setName(DomUtil.findChildContent(colNode, "a:Code"));
                 if (StringUtils.equalsIgnoreCase(col.getName(), "ts") ||
                         StringUtils.equalsIgnoreCase(col.getName(), "dr")) {
-                    logger.error("PDM(" + pdmFileName + ")中表(" +
-                            table.getName() + ")的列(" + col.getName() +
-                            ")无需设置。");
+//                    logger.error("PDM(" + pdmFileName + ")中表(" +
+//                            table.getName() + ")的列(" + col.getName() +
+//                            ")无需设置。");
                     continue;
                 }
                 col.setTypeName(DomUtil.findChildContent(colNode, "a:DataType"));
@@ -138,7 +138,7 @@ public class PdmUtil {
                     String msg = "PDM(" + pdmFileName + ")中表(" +
                             table.getName() + ")的列(" + col.getName() +
                             ")未设置数据类型。";
-                    logger.error(msg);
+//                    logger.error(msg);
                     continue;
                 }
                 String length = DomUtil.findChildContent(colNode, "a:Length");
@@ -168,8 +168,8 @@ public class PdmUtil {
                     String indexName = DomUtil.findChildContent(indexNode, "a:Code");
                     List<Node> indexColNodes = DomUtil.findNestedChilds(indexNode, "c:IndexColumns/o:IndexColumn/c:Column/o:Column");
                     if (indexColNodes.isEmpty()) {
-                        logger.error("PDM(" + pdmFileName + ")中表(" +
-                                table.getName() + ")的索引(" + indexName + ")未定义列。");
+//                        logger.error("PDM(" + pdmFileName + ")中表(" +
+//                                table.getName() + ")的索引(" + indexName + ")未定义列。");
                         continue;
                     }
                     String indexId = ((Element) indexNode).getAttribute("Id");
@@ -186,7 +186,7 @@ public class PdmUtil {
                 }
                 String primaryKeyRef = DomUtil.findNestedChildAttr(tableNode, "c:PrimaryKey/o:Key", "Ref");
                 if (StringUtils.isBlank(primaryKeyRef)) {
-                    logger.error("PDM(" + pdmFileName + ")中表(" + table.getName() + ")无主键。");
+//                    logger.error("PDM(" + pdmFileName + ")中表(" + table.getName() + ")无主键。");
                 } else {
                     Element okeyEle = (Element) DomUtil.findNestedChild(tableNode, "c:Keys/o:Key", "Id", primaryKeyRef);
                     if (okeyEle != null) {
@@ -210,7 +210,7 @@ public class PdmUtil {
                             if (success) {
                                 table.setPkConstraint(pkConstraint);
                             } else {
-                                logger.error("PDM(" + pdmFileName + ")中表(" + table.getName() + ")无主键。");
+//                                logger.error("PDM(" + pdmFileName + ")中表(" + table.getName() + ")无主键。");
                             }
                         }
                     }
@@ -223,9 +223,9 @@ public class PdmUtil {
                 }
             }
         }
-        logger.error("Millis cost at parsing (" + pdmFileName +
-                ") with " + tableNodes.size() + " tables: " + (
-                System.currentTimeMillis() - start));
+//        logger.error("Millis cost at parsing (" + pdmFileName +
+//                ") with " + tableNodes.size() + " tables: " + (
+//                System.currentTimeMillis() - start));
     }
 
     private static List<FkConstraint> parseReferences(Element modelEle, String pdmFileName, Map<String, Table> idTableMap, Map<String, Column> idColumnMap) {
@@ -233,7 +233,7 @@ public class PdmUtil {
         List<FkConstraint> fkConstraints = new ArrayList<FkConstraint>();
         List<Node> referenceNodes = DomUtil.findNestedChilds(modelEle, "c:References/o:Reference");
         if (referenceNodes.isEmpty()) {
-            logger.error("PDM(" + pdmFileName + ")中未配置外键引用。");
+//            logger.error("PDM(" + pdmFileName + ")中未配置外键引用。");
             return fkConstraints;
         }
         for (Node referenceNode : referenceNodes) {
@@ -244,8 +244,8 @@ public class PdmUtil {
             Table mainTable = (Table) idTableMap.get(mainTableId);
             Table subTable = (Table) idTableMap.get(subTableId);
             if (mainTable == null || subTable == null) {
-                logger.error((new StringBuilder("PDM(")).append(pdmFileName).append(")中外键引用(")
-                        .append(referDesc).append(")引用关联的表无效。").toString());
+//                logger.error((new StringBuilder("PDM(")).append(pdmFileName).append(")中外键引用(")
+//                        .append(referDesc).append(")引用关联的表无效。").toString());
                 continue;
             }
             Node referenceJoinNode = DomUtil.findNestedChild(referenceNode, "c:Joins/o:ReferenceJoin");
@@ -265,15 +265,15 @@ public class PdmUtil {
                     subTable.getFkConstraints().add(fkConstraint);
                     continue;
                 }
-                logger.error((new StringBuilder("PDM(")).append(pdmFileName).append(")中外键引用(")
-                        .append(referDesc).append(")引用关联的表列无效。").toString());
+//                logger.error((new StringBuilder("PDM(")).append(pdmFileName).append(")中外键引用(")
+//                        .append(referDesc).append(")引用关联的表列无效。").toString());
                 continue;
             }
-            logger.error((new StringBuilder("PDM(")).append(pdmFileName).append(")中外键引用(")
-                    .append(referDesc).append(")引用关联的表列无效。").toString());
+//            logger.error((new StringBuilder("PDM(")).append(pdmFileName).append(")中外键引用(")
+//                    .append(referDesc).append(")引用关联的表列无效。").toString());
         }
-        logger.error("Millis cost at parsing " + referenceNodes.size() + " references is: " + (
-                System.currentTimeMillis() - startMillis));
+//        logger.error("Millis cost at parsing " + referenceNodes.size() + " references is: " + (
+//                System.currentTimeMillis() - startMillis));
         return fkConstraints;
     }
 
@@ -282,7 +282,7 @@ public class PdmUtil {
         List<Node> viewNodes = DomUtil.findNestedChilds(modelEle, "c:Views/o:View");
         if (viewNodes.isEmpty()) {
 
-            logger.error("PDM(" + pdmFileName + ")中未配置视图。");
+//            logger.error("PDM(" + pdmFileName + ")中未配置视图。");
             return Collections.EMPTY_LIST;
         }
         List<Pdm.ViewInfo> viewInfos = new ArrayList<Pdm.ViewInfo>();
@@ -291,7 +291,7 @@ public class PdmUtil {
             String viewDesc = DomUtil.findChildContent(viewNode, "a:Name");
             List<Node> viewColNodes = DomUtil.findNestedChilds(viewNode, "c:Columns/o:ViewColumn");
             if (viewColNodes.isEmpty()) {
-                logger.error("PDM(" + pdmFileName + ")中视图(" + viewDesc + ")未设置查询列。");
+//                logger.error("PDM(" + pdmFileName + ")中视图(" + viewDesc + ")未设置查询列。");
                 continue;
             }
             String sqlQuery = DomUtil.findChildContent(viewNode, "a:View.SQLQuery");
@@ -305,8 +305,8 @@ public class PdmUtil {
                 viewInfos.add(viewInfo);
             }
         }
-        logger.error("Millis cost at parsing " + viewNodes.size() + " view is: " + (
-                System.currentTimeMillis() - startMillis));
+//        logger.error("Millis cost at parsing " + viewNodes.size() + " view is: " + (
+//                System.currentTimeMillis() - startMillis));
         return viewInfos;
     }
 
@@ -319,7 +319,7 @@ public class PdmUtil {
             DocumentBuilder db = dbf.newDocumentBuilder();
             return db.parse(file.getInputStream());
         } catch (Exception e) {
-            logger.error("解析文件" + file.getPath() + "为xml出错。", e);
+//            logger.error("解析文件" + file.getPath() + "为xml出错。", e);
             throw new PDMParseRuntimeException("解析文件" + file.getPath() + "为xml出错。");
         }
     }

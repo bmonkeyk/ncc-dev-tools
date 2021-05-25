@@ -6,8 +6,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -16,7 +16,7 @@ import java.util.*;
 
 @XStreamAlias("oidMarkRule")
 public class OidMarkRule {
-    protected static Logger logger = LoggerFactory.getLogger(OidMarkRule.class.getName());
+//    protected static Logger logger = LoggerFactory.getLogger(OidMarkRule.class.getName());
     @XStreamImplicit
     private List<OidMarkMap> oidMarkMaps;
 
@@ -75,7 +75,7 @@ public class OidMarkRule {
             reader = new InputStreamReader(new FileInputStream(ruleCfgfile), "UTF-8");
             rule = (OidMarkRule) xstream.fromXML(reader);
         } catch (Exception e) {
-            logger.error("Failed to parse oidmark with version path: (" + ruleCfgfile.getPath() + ")", e);
+//            logger.error("Failed to parse oidmark with version path: (" + ruleCfgfile.getPath() + ")", e);
         } finally {
             IOUtils.closeQuietly(reader);
         }

@@ -12,17 +12,24 @@ import com.intellij.openapi.vfs.VirtualFileManager;
 import com.pub.exception.BusinessException;
 import com.pub.util.ProjectManager;
 import com.yingling.libraries.util.ClassPathConstantUtil;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 /**
  * 设置nc类路径-按目录
@@ -92,7 +99,7 @@ public class LibrariesJarSetListener2 {
         //扫描hotwebs
         String hotwebPath = homePath + File.separator + "hotwebs" + File.separator + "nccloud" + File.separator + "WEB-INF";
         String externalPath = homePath + File.separator + "external";
-//        hotwebEspecial(homePath, externalPath);//移动pub_platform到external
+        hotwebEspecial(homePath,hotwebPath, externalPath);//移动pub_platform到external
         Set<String> nccloudList = scanJarAndClasses(hotwebPath, true, true);
 
         //扫描lib 和 external
@@ -207,7 +214,7 @@ public class LibrariesJarSetListener2 {
      * 递归查询所有的java和class
      *
      * @param classesFile
-     * @param classSet
+     * @param classSetimport com.intellij.openapi.vfs.VirtualFile;
      */
     private static void getClassFiles(File classesFile, Set<String> classSet) {
         if (classesFile.isDirectory()) {
@@ -231,7 +238,7 @@ public class LibrariesJarSetListener2 {
      * @param hotwebsPath
      * @param externalPath
      */
-    private static void hotwebEspecial(String hotwebsPath, String externalPath) {
+    private static void hotwebEspecial(String homePath,String hotwebsPath, String externalPath) {
         File hotwebFile = new File(hotwebsPath + File.separator + "lib");
         File externalFile = new File(externalPath + File.separator + "lib");
         if (!hotwebFile.exists() || !externalFile.exists()) {
@@ -242,17 +249,61 @@ public class LibrariesJarSetListener2 {
             return;
         }
         for (File file : files) {
-            if (file.exists() && !file.isDirectory() && file.getName().endsWith(".jar") && !file.getName().startsWith("ui")) {
+//            if (file.exists() && !file.isDirectory() && file.getName().endsWith(".jar") && !file.getName().startsWith("ui")) {
                 try {
+                    //
+                    if(file.getName().endsWith("jar") && !file.getName().contains("_src")){
+                        unZip(homePath,file);
+                    }
+                    File newFile = new File(externalFile.getPath() + File.separator + file.getName());
+                    if(newFile.exists()){
+                        newFile.delete();
+                    }
                     //jar包复制到external/lib下
-                    FileUtil.copy(file, new File(externalFile.getPath() + File.separator + file.getName()));
+                    FileUtil.copy(file, newFile);
                     //复制后删除
                     file.delete();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+//            }
+        }
+    }
+
+    /**
+     * 读取jar包
+     * @param jarFile
+     */
+    private static void unZip(String homePath,File jarFile) throws IOException {
+        String outPath = homePath +File.separator + "hotwebs" +File.separator + "nccloud" + File.separator + "WEB-INF" + File.separator + "extend";
+        JarFile jar = new JarFile(jarFile.getPath());
+        Enumeration<JarEntry> entries = jar.entries();
+        while (entries.hasMoreElements()) {
+            JarEntry entry = entries.nextElement();
+            if (entry.isDirectory()) {
+                continue;
+            }
+            String name = entry.getName();
+            if (isConfigResource(name)) {
+                System.out.println(name);
+                InputStream inputStream = jar.getInputStream(entry);
+                BufferedInputStream in = new BufferedInputStream(inputStream);
+                File file = new File(outPath + File.separator + name);
+                if(!file.exists()){
+                    file.getParentFile().mkdirs();
+                    file.createNewFile();
+                }
+                BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file.getPath()));
+                int len = -1;
+                byte[] b = new byte[1024];
+                while ((len = in.read(b)) != -1) {
+                    out.write(b, 0, len);
+                }
+                in.close();
+                out.close();
             }
         }
+
     }
 
     private static Map<String, Set<String>> scanModules(String modulesPath) {
@@ -281,5 +332,32 @@ public class LibrariesJarSetListener2 {
         jarMap.put(ClassPathConstantUtil.PATH_NAME_CLIENT, clientLibrarySet);
 
         return jarMap;
+    }
+    private static boolean isConfigResource(String name) {
+        boolean flag = false;
+        if (!name.startsWith("yyconfig")) {
+            return false;
+        }
+        flag = name.indexOf(".xml") > -1;
+        if (!flag) {
+            flag = name.indexOf(".json") > -1;
+        }
+        if (flag) {
+            flag = !isSystemConfig(name);
+        }
+        return flag;
+    }
+
+    private static boolean isSystemConfig(String name) {
+        String[] systemNames = new String[]{
+                "yyconfig/configreader/configreader.xml", "log.xml",
+                "yyconfig/baseapi/baseapi.xml"
+        };
+        for (String systemName : systemNames) {
+            if (name.indexOf(systemName) > -1) {
+                return true;
+            }
+        }
+        return false;
     }
 }

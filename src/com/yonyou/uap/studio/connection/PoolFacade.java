@@ -6,13 +6,13 @@ import com.yonyou.uap.studio.connection.exception.ConnectionException;
 import com.yonyou.uap.studio.connection.ierp.IerpDataSourceProvider;
 import com.yonyou.uap.studio.connection.model.DataSourceMetaInfo;
 import com.yonyou.uap.studio.connection.provider.IDataSourceProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+
 
 import java.sql.Connection;
 
 public class PoolFacade {
-    protected static Logger logger = LoggerFactory.getLogger(PoolFacade.class.getName());
+//    protected static Logger logger = LoggerFactory.getLogger(PoolFacade.class.getName());
 
 //    private static final String[] libraries = {"lib/dynamic.jar",
 //            "lib/bonecp-0.7.1.RELEASE.jar", "lib/guava-14.0.1.jar",
@@ -111,7 +111,7 @@ public class PoolFacade {
             try {
                 manager.dispose();
             } catch (SecurityException e) {
-                logger.error(e.getMessage(), e);
+//                logger.error(e.getMessage(), e);
             }
         }
         if (this.provider != null)

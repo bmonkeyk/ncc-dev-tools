@@ -11,8 +11,8 @@ import nc.uap.studio.pub.db.model.ITable;
 import nc.uap.studio.pub.db.model.impl.Column;
 import nc.uap.studio.pub.db.model.impl.Table;
 import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+
 
 import java.io.*;
 import java.text.MessageFormat;
@@ -22,7 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 
 public class DbCreateServiceImpl implements IDbCreateService {
-    protected static Logger logger = LoggerFactory.getLogger(DbCreateServiceImpl.class.getName());
+//    protected static Logger logger = LoggerFactory.getLogger(DbCreateServiceImpl.class.getName());
     private static final int DDL_TYPE_TABLE = 1;
 
     private static final int DDL_TYPE_INDEX_AND_REFERENCE = 2;
@@ -149,11 +149,11 @@ public class DbCreateServiceImpl implements IDbCreateService {
                 generator.geneCreateViewDdl(pdm.getViews(), viewWriter);
             }
         } catch (FileNotFoundException e) {
-            logger.error("File not found", e);
+//            logger.error("File not found", e);
             throw new PDMParseRuntimeException("File not found");
         } catch (UnsupportedEncodingException e) {
             String msg = MessageFormat.format("{0} code unsupported.", new Object[]{"gb2312"});
-            logger.error(msg, e);
+//            logger.error(msg, e);
             throw new PDMParseRuntimeException(msg);
         } finally {
             IOUtils.closeQuietly(tableWriter);
@@ -266,7 +266,7 @@ public class DbCreateServiceImpl implements IDbCreateService {
                     String msg = MessageFormat.format(
                             "The length of constraint name of primary key of table {1} belongs to  is exceeding", new Object[]{pdmName,
                                     table.getName(), String.valueOf(length)});
-                    logger.error(msg);
+//                    logger.error(msg);
                     iter.remove();
                 }
             }

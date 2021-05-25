@@ -57,15 +57,13 @@ public class EjbConfCopyUtil {
      * @return
      */
     private List<String> getUpmList(List<VirtualFile> virtualFileList) {
-        List<String> upmList = new ArrayList<>();
         Set<String> set = new HashSet<>();
         if (null != virtualFileList) {
             for (VirtualFile v : virtualFileList) {
                 getFileUrl(v.getPath(), set);
             }
         }
-        upmList.addAll(set);
-        return upmList;
+        return new ArrayList<>(set);
     }
 
     /**

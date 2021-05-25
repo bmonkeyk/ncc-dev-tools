@@ -7,23 +7,32 @@ import com.intellij.openapi.module.Module;
 import com.intellij.openapi.ui.Messages;
 import com.pub.exception.BusinessException;
 import com.pub.util.ProjectManager;
+import com.yingling.abs.AbstractAnAction;
 import org.jetbrains.annotations.NotNull;
+
+import javax.swing.*;
 
 /**
  * 为module 设置library
  */
-public class LibrarySetAction extends AnAction {
+public class LibrarySetAction extends AbstractAnAction {
+
     @Override
-    public void actionPerformed(@NotNull AnActionEvent event) {
+    public void doAction(@NotNull AnActionEvent event) {
         Module selectModule = event.getData(LangDataKeys.MODULE);
         String message = "success";
         try {
-            ProjectManager.getInstance().setModuleLibrary(event.getProject(),selectModule);
+            ProjectManager.getInstance().setModuleLibrary(event.getProject(), getSelectModule(event));
             Messages.showInfoMessage(message, "Tips");
         } catch (BusinessException e) {
             e.printStackTrace();
             message = e.getMessage();
             Messages.showInfoMessage(message, "Error");
         }
+    }
+
+    @Override
+    public void update(@NotNull AnActionEvent e) {
+        e.getPresentation().setEnabled(isNCModule(e));
     }
 }

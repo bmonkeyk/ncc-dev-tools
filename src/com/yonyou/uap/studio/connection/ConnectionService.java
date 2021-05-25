@@ -3,8 +3,8 @@ package com.yonyou.uap.studio.connection;
 import com.yonyou.uap.studio.connection.exception.ConnectionException;
 import com.yonyou.uap.studio.connection.model.DataSourceMetaInfo;
 import com.yonyou.uap.studio.connection.rsp.IResultSetProcessor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -13,7 +13,7 @@ import java.sql.Statement;
 
 public class ConnectionService {
 
-    protected static Logger logger = LoggerFactory.getLogger(ConnectionService.class.getName());
+//    protected static Logger logger = LoggerFactory.getLogger(ConnectionService.class.getName());
 
     private static PoolFacade instance = null;
 
@@ -33,7 +33,7 @@ public class ConnectionService {
             try {
                 rs.close();
             } catch (SQLException e) {
-                logger.error(e.getMessage(), e);
+//                logger.error(e.getMessage(), e);
             }
         }
 
@@ -41,7 +41,7 @@ public class ConnectionService {
             try {
                 statement.close();
             } catch (SQLException e) {
-                logger.error(e.getMessage(), e);
+//                logger.error(e.getMessage(), e);
             }
         }
 
@@ -49,7 +49,7 @@ public class ConnectionService {
             try {
                 connection.close();
             } catch (SQLException e) {
-                logger.error(e.getMessage(), e);
+//                logger.error(e.getMessage(), e);
             }
         }
 
@@ -66,7 +66,7 @@ public class ConnectionService {
             rs = statement.executeQuery(sql);
             t = processor.process(rs);
         } catch (SQLException e) {
-            logger.error(e.getMessage(), e);
+//            logger.error(e.getMessage(), e);
         } finally {
             closeQuietly(connection, statement, rs);
         }
@@ -93,12 +93,11 @@ public class ConnectionService {
             connection.commit();
             return true;
         } catch (SQLException e) {
-            logger.error(e.getMessage(), e);
-
+//            logger.error(e.getMessage(), e);
             try {
                 connection.rollback();
             } catch (SQLException ex) {
-                logger.error(ex.getMessage(), ex);
+//                logger.error(ex.getMessage(), ex);
                 throw ex;
             }
 

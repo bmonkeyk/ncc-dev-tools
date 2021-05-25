@@ -24,8 +24,8 @@ import nc.uap.studio.pub.db.model.TableStructure;
 import nc.uap.studio.pub.db.query.SqlQueryResultSet;
 import nc.uap.studio.pub.db.script.export.InitDataExportStratege2;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+
 
 import java.io.InputStream;
 import java.sql.Connection;
@@ -36,7 +36,7 @@ import java.text.MessageFormat;
 import java.util.*;
 
 public class ExportComponentInitDataAction extends AnAction {
-    protected static Logger logger = LoggerFactory.getLogger(ExportComponentInitDataAction.class.getName());
+//    protected static Logger logger = LoggerFactory.getLogger(ExportComponentInitDataAction.class.getName());
     private static final IScriptService service = new ScriptService();
     private static final IQueryService queryService = new QueryService();
 
@@ -77,7 +77,7 @@ public class ExportComponentInitDataAction extends AnAction {
         try {
             con = ConnectionService.getConnection(dsname);
         } catch (ConnectionException e2) {
-            logger.error(e2.getMessage(), e2);
+//            logger.error(e2.getMessage(), e2);
             Messages.showMessageDialog(project, "connection faild", "tips", Messages.getInformationIcon());
             return;
         }
@@ -85,7 +85,7 @@ public class ExportComponentInitDataAction extends AnAction {
         try {
             mlTableInfo = getMLTableInfo(dsname);
         } catch (ConnectionException e1) {
-            logger.error(e1.getMessage(), e1);
+//            logger.error(e1.getMessage(), e1);
             Messages.showMessageDialog(project, "connection faild", "tips", Messages.getInformationIcon());
             return;
         }
@@ -98,7 +98,7 @@ public class ExportComponentInitDataAction extends AnAction {
                     rs = queryService.query(conf.getTable(),
                             conf.getWhere(), struct, con);
                 } catch (Exception e1) {
-                    logger.error(e1.getMessage(), e1);
+//                    logger.error(e1.getMessage(), e1);
                 }
                 if (rs == null)
                     continue;
@@ -106,7 +106,7 @@ public class ExportComponentInitDataAction extends AnAction {
                 service.export(rs, strategy);
             }
         } catch (RuntimeException e2) {
-            logger.error(e2.getMessage(), e2);
+//            logger.error(e2.getMessage(), e2);
             Messages.showMessageDialog(project, "connection faild", "tips", Messages.getInformationIcon());
             return;
         } finally {
@@ -194,7 +194,7 @@ public class ExportComponentInitDataAction extends AnAction {
                     }
                 }
             } catch (Exception e) {
-                logger.error(e.getMessage(), e);
+//                logger.error(e.getMessage(), e);
             }
             return list;
         }
@@ -217,7 +217,7 @@ public class ExportComponentInitDataAction extends AnAction {
                     moduleMappings.add(tm);
                 }
             } catch (Exception e) {
-                logger.error(e.getMessage(), e);
+//                logger.error(e.getMessage(), e);
             }
         return moduleMappings;
     }
@@ -292,7 +292,7 @@ public class ExportComponentInitDataAction extends AnAction {
                     list.add(columnName);
             }
         } catch (SQLException e) {
-            logger.error(e.getMessage(), e);
+//            logger.error(e.getMessage(), e);
         } finally {
             if (rs != null)
                 try {

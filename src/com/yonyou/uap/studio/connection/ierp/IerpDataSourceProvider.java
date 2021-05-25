@@ -5,8 +5,8 @@ import com.yonyou.uap.studio.connection.provider.IDataSourceProvider;
 import nc.uap.plugin.studio.StudioUtil;
 import nc.uap.plugin.studio.ui.preference.prop.DataSourceMeta;
 import nc.uap.plugin.studio.ui.preference.xml.PropXml;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -15,7 +15,7 @@ import java.util.*;
 
 public class IerpDataSourceProvider implements IDataSourceProvider {
 
-    protected static Logger logger = LoggerFactory.getLogger(IerpDataSourceProvider.class.getName());
+//    protected static Logger logger = LoggerFactory.getLogger(IerpDataSourceProvider.class.getName());
 
     private static final String DESIGN_DS_NAME = "design";
 
@@ -43,7 +43,7 @@ public class IerpDataSourceProvider implements IDataSourceProvider {
                     try {
                         results.add(pop.toURI().toURL());
                     } catch (MalformedURLException e) {
-                        logger.error(e.getMessage(), e);
+//                        logger.error(e.getMessage(), e);
                     }
             }
         }
@@ -104,7 +104,7 @@ public class IerpDataSourceProvider implements IDataSourceProvider {
                     uapDatasourceMetas.put(meta.getDataSourceName(), meta);
                 }
             } catch (Exception e) {
-                logger.error(e.getMessage(), e);
+//                logger.error(e.getMessage(), e);
                 uapDatasourceMetas = null;
             }
         }
