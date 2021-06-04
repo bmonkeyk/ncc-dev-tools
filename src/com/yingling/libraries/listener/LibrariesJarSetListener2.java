@@ -11,6 +11,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
 import com.pub.exception.BusinessException;
 import com.pub.util.ProjectManager;
+import com.yingling.extensions.service.NccEnvSettingService;
 import com.yingling.libraries.util.ClassPathConstantUtil;
 import org.apache.commons.lang3.StringUtils;
 
@@ -97,10 +98,9 @@ public class LibrariesJarSetListener2 {
         Set<String> langList = scanJarAndClasses(langPath, false, false);
 
         //扫描hotwebs
-        String hotwebPath = homePath + File.separator + "hotwebs" + File.separator + "nccloud" + File.separator + "WEB-INF";
         String externalPath = homePath + File.separator + "external";
-        hotwebEspecial(homePath,hotwebPath, externalPath);//移动pub_platform到external
-        Set<String> nccloudList = scanJarAndClasses(hotwebPath, true, true);
+        hotwebEspecial(homePath, externalPath,"nccloud","ncchr");//移动pub_platform到external
+//        Set<String> nccloudList = scanJarAndClasses(hotwebPath, true, true);
 
         //扫描lib 和 external
         String libPath = homePath + File.separator + "lib";
@@ -133,7 +133,7 @@ public class LibrariesJarSetListener2 {
         setLibrary(langList, project, (LibraryEx.ModifiableModelEx) model.getLibraryByName(ClassPathConstantUtil.PATH_NAME_LANG).getModifiableModel());
         setLibrary(productList, project, (LibraryEx.ModifiableModelEx) model.getLibraryByName(ClassPathConstantUtil.PATH_NAME_PRODUCT).getModifiableModel());
         setLibrary(ejbList, project, (LibraryEx.ModifiableModelEx) model.getLibraryByName(ClassPathConstantUtil.PATH_NAME_EJB).getModifiableModel());
-        setLibrary(nccloudList, project, (LibraryEx.ModifiableModelEx) model.getLibraryByName(ClassPathConstantUtil.PATH_NAME_NCCLOUD).getModifiableModel());
+//        setLibrary(nccloudList, project, (LibraryEx.ModifiableModelEx) model.getLibraryByName(ClassPathConstantUtil.PATH_NAME_NCCLOUD).getModifiableModel());
         setLibrary(resourcesList, project, (LibraryEx.ModifiableModelEx) model.getLibraryByName(ClassPathConstantUtil.PATH_NAME_RESOURCES).getModifiableModel());
 
 
@@ -214,7 +214,7 @@ public class LibrariesJarSetListener2 {
      * 递归查询所有的java和class
      *
      * @param classesFile
-     * @param classSetimport com.intellij.openapi.vfs.VirtualFile;
+     * @param classSet com.intellij.openapi.vfs.VirtualFile;
      */
     private static void getClassFiles(File classesFile, Set<String> classSet) {
         if (classesFile.isDirectory()) {
@@ -234,29 +234,35 @@ public class LibrariesJarSetListener2 {
 
     /**
      * hotweb下非ui类jar包转移到external下
-     *
-     * @param hotwebsPath
+     * @param homePath
      * @param externalPath
+     * @param webServers
      */
-    private static void hotwebEspecial(String homePath,String hotwebsPath, String externalPath) {
-        File hotwebFile = new File(hotwebsPath + File.separator + "lib");
-        File externalFile = new File(externalPath + File.separator + "lib");
-        if (!hotwebFile.exists() || !externalFile.exists()) {
-            return;
-        }
-        File[] files = hotwebFile.listFiles();
-        if (files == null) {
-            return;
-        }
-        for (File file : files) {
-//            if (file.exists() && !file.isDirectory() && file.getName().endsWith(".jar") && !file.getName().startsWith("ui")) {
+    private static void hotwebEspecial(String homePath,String externalPath,String... webServers) {
+        String hotwebsPath = homePath + File.separator + "hotwebs" ;
+        for(String server : webServers){
+            File hotwebFile = new File(hotwebsPath + File.separator + server + File.separator + "WEB-INF" + File.separator +"lib");
+            File externalFile = new File(externalPath + File.separator + "lib");
+            if (!hotwebFile.exists() || !externalFile.exists()) {
+                return;
+            }
+            File[] files = hotwebFile.listFiles();
+            if (files == null) {
+                return;
+            }
+            boolean isNCCloudFlag = server.equals("nccloud");
+            StringBuffer jarBuffer = new StringBuffer("");
+            for (File file : files) {
                 try {
-                    //
-                    if(file.getName().endsWith("jar") && !file.getName().contains("_src")){
-                        unZip(homePath,file);
+                    //nccloud的jar需要解压提取鉴权文件
+                    if (file.getName().endsWith("jar") && !file.getName().contains("_src")) {
+                        jarBuffer.append(",").append(file.getName());
+                        if(isNCCloudFlag){
+                            unZip(homePath, file);
+                        }
                     }
                     File newFile = new File(externalFile.getPath() + File.separator + file.getName());
-                    if(newFile.exists()){
+                    if (newFile.exists()) {
                         newFile.delete();
                     }
                     //jar包复制到external/lib下
@@ -266,8 +272,18 @@ public class LibrariesJarSetListener2 {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-//            }
+            }
+
+            switch (server){
+                case "nccloud":
+                    NccEnvSettingService.getInstance().setNccloudJar(jarBuffer.toString().substring(1));
+                    break;
+                case "ncchr":
+                    NccEnvSettingService.getInstance().setNcchrJAR(jarBuffer.toString().substring(1));
+            }
+
         }
+
     }
 
     /**

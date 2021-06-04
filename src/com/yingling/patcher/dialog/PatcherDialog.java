@@ -6,6 +6,7 @@ import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.components.JBList;
+import com.yingling.extensions.service.NccEnvSettingService;
 import com.yingling.patcher.util.ExportPatcherUtil;
 import org.apache.commons.lang.StringUtils;
 
@@ -75,6 +76,7 @@ public class PatcherDialog extends JDialog {
             }
         }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
+        savePath.setText(NccEnvSettingService.getInstance(event.getProject()).getLastPatcherPath());
         // 保存路径按钮事件
         fileChooseBtn.addActionListener(new ActionListener() {
             @Override
@@ -108,6 +110,7 @@ public class PatcherDialog extends JDialog {
         }
 
         String exportPath = savePath.getText();
+        NccEnvSettingService.getInstance(event.getProject()).setLastPatcherPath(exportPath);
 
         boolean srcFlag = srcFlagCheckBox.isSelected();
         boolean cloudFlag = cloudFlagCheckBox.isSelected();

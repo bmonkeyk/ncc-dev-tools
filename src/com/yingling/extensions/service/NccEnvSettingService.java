@@ -20,25 +20,32 @@ public class NccEnvSettingService implements PersistentStateComponent<Element> {
     private String ex_modules;
     private String must_modules;
     private String connected_data_source;
+    private String nccloudJar;
+    private String ncchrJAR;
+    private String lastPatcherPath;
 
     private final String ATTR_NCHOME_PATH = "ncHomePath";
     private final String ATTR_TABLES_PATH = "tablesPath";
     private final String ATTR__EX_MODULES = "ex_modules";
     private final String ATTR_MUST_MODULES = "must_modules";
     private final String ATTR_CONNECTD_DATA_SOURCE = "connectd_data_source";
+    private final String ATTR_NCCLOUDJAR = "nccloudJar";
+    private final String ATTR_NCCHRJAR = "ncchrJar";
+    private final String ATTR_LASTPATCHERPATH = "lastPatcherPath";
+
 
     public NccEnvSettingService() {
     }
 
     public static NccEnvSettingService getInstance() {
-        Project project = ProjectManager.getInstance().getProject();
-        return getInstance(project);
+        Project pro = ProjectManager.getInstance().getProject();
+        return getInstance(pro);
     }
 
     public static NccEnvSettingService getInstance(Project project) {
-        if(project == null){
+        if (project == null) {
             Messages.showMessageDialog("please open a project", "error", Messages.getErrorIcon());
-            return null ;
+            return null;
         } else {
             return ServiceManager.getService(project, NccEnvSettingService.class);
         }
@@ -54,6 +61,9 @@ public class NccEnvSettingService implements PersistentStateComponent<Element> {
         element.setAttribute(ATTR__EX_MODULES, getEx_modules());
         element.setAttribute(ATTR_MUST_MODULES, getMust_modules());
         element.setAttribute(ATTR_CONNECTD_DATA_SOURCE, getConnected_data_source());
+        element.setAttribute(ATTR_NCCLOUDJAR, getNccloudJar());
+        element.setAttribute(ATTR_NCCHRJAR, getNcchrJAR());
+        element.setAttribute(ATTR_LASTPATCHERPATH, getLastPatcherPath());
         return element;
     }
 
@@ -65,6 +75,9 @@ public class NccEnvSettingService implements PersistentStateComponent<Element> {
         this.setEx_modules(element.getAttributeValue(ATTR__EX_MODULES) == null ? "" : element.getAttributeValue(ATTR__EX_MODULES));
         this.setMust_modules(element.getAttributeValue(ATTR_MUST_MODULES) == null ? "" : element.getAttributeValue(ATTR_MUST_MODULES));
         this.setConnected_data_source(element.getAttributeValue(ATTR_CONNECTD_DATA_SOURCE) == null ? "" : element.getAttributeValue(ATTR_CONNECTD_DATA_SOURCE));
+        this.setNccloudJar(element.getAttributeValue(ATTR_NCCLOUDJAR) == null ? "" : element.getAttributeValue(ATTR_NCCLOUDJAR));
+        this.setNcchrJAR(element.getAttributeValue(ATTR_NCCHRJAR) == null ? "" : element.getAttributeValue(ATTR_NCCHRJAR));
+        this.setLastPatcherPath(element.getAttributeValue(ATTR_LASTPATCHERPATH) == null ? "" : element.getAttributeValue(ATTR_LASTPATCHERPATH));
     }
 
     public String getNcHomePath() {
@@ -106,4 +119,29 @@ public class NccEnvSettingService implements PersistentStateComponent<Element> {
     public String getConnected_data_source() {
         return StringUtils.isBlank(connected_data_source) ? "" : connected_data_source;
     }
+
+    public String getNccloudJar() {
+        return StringUtils.isBlank(nccloudJar) ? "" : nccloudJar;
+    }
+
+    public void setNccloudJar(String nccloudJar) {
+        this.nccloudJar = nccloudJar;
+    }
+
+    public String getNcchrJAR() {
+        return StringUtils.isBlank(ncchrJAR) ? "" : ncchrJAR;
+    }
+
+    public void setNcchrJAR(String ncchrJAR) {
+        this.ncchrJAR = ncchrJAR;
+    }
+
+    public String getLastPatcherPath() {
+        return StringUtils.isBlank(lastPatcherPath) ? "" : lastPatcherPath;
+    }
+
+    public void setLastPatcherPath(String lastPatcherPath) {
+        this.lastPatcherPath = lastPatcherPath;
+    }
+
 }
