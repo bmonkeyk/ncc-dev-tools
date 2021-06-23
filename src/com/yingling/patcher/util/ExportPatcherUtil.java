@@ -601,8 +601,8 @@ public class ExportPatcherUtil {
             return fileList;
         }
         //如果什么都不是，则判断是不是模块下的文件或者目录
-        String modulePath = module.getModuleFile().getParent().getPath();
-        if (path.startsWith(new File(modulePath).getPath())) {
+        String modulePath = module.getModuleFilePath();
+        if (path.startsWith(new File(modulePath).getParentFile().getPath())) {
             fileList.add(path);
         }
         return fileList;
