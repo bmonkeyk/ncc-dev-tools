@@ -4,7 +4,8 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.yingling.extensions.service.NccEnvSettingService;
+import com.yingling.base.NccEnvSettingService;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -24,7 +25,7 @@ public class ExtendCopyUtil {
         for (String file : authFileList) {
             String toPath = homePath + File.separator + "hotwebs" + File.separator + "nccloud" + File.separator + "WEB-INF" + File.separator
                     + "extend" + File.separator + "yyconfig" + File.separator + "modules";
-            String filePath = file.split(Matcher.quoteReplacement("yyconfig"+File.separator+"modules"))[1];
+            String filePath = file.split(Matcher.quoteReplacement("yyconfig" + File.separator + "modules"))[1];
             toPath += filePath;
             FileUtil.copy(new File(file), new File(toPath));
         }
@@ -64,9 +65,9 @@ public class ExtendCopyUtil {
             } else {
                 if (filePath.endsWith("xml")) {
                     filePath = new File(filePath).getPath();
-                    String tag1 = "client"+File.separator+"yyconfig"+File.separator+"modules";
-                    String tag2 = "config"+File.separator+"action";
-                    String tag3 = "config"+File.separator+"authorize";
+                    String tag1 = "client" + File.separator + "yyconfig" + File.separator + "modules";
+                    String tag2 = "config" + File.separator + "action";
+                    String tag3 = "config" + File.separator + "authorize";
                     if ((filePath.contains(tag1) && filePath.contains(tag2))
                             || (filePath.contains(tag1) && filePath.contains(tag3))) {
                         fileUrlSet.add(file.getPath());

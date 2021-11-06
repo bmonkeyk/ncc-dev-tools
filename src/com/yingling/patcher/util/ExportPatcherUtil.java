@@ -10,13 +10,13 @@ import com.intellij.openapi.roots.CompilerModuleExtension;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.pub.exception.BusinessException;
-import com.yingling.util.ConfigureFileUtil;
+import com.yingling.base.BusinessException;
+import com.yingling.base.ConfigureFileUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import javax.swing.*;
+import javax.swing.JProgressBar;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
@@ -210,7 +210,7 @@ public class ExportPatcherUtil {
                     exportMetaFile(moduleName, ncModuleName, fromFile);
                 } else if (fileName.endsWith(TYPE_PROPERTIES)) {//导出多语文件
                     exportProperties(moduleName, fromFile);
-                } else if (fileName.endsWith(TYPE_OPENAPI_MD)){
+                } else if (fileName.endsWith(TYPE_OPENAPI_MD)) {
                     exportOpenApiMD(moduleName, fromFile);
                 }
                 progressBar.setValue(count);
@@ -386,8 +386,10 @@ public class ExportPatcherUtil {
             in.close();
         }
     }
+
     /**
      * 导出openapi中的md描述文件
+     *
      * @param moduleName
      * @param fromFile
      */
@@ -397,6 +399,7 @@ public class ExportPatcherUtil {
         String toPath = exportPath + PATH_REPLACEMENT + fromParentPath.split(Matcher.quoteReplacement(PATH_OPENAPI))[1];
         outPatcher(moduleName, fromFile.getPath(), toPath);
     }
+
     /**
      * 导出元数据文件
      *

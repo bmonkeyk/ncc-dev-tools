@@ -6,25 +6,25 @@ import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.actionSystem.LangDataKeys;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.yingling.base.ProjectManager;
+import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.*;
-import java.io.File;
-
+/**
+ * idea按钮抽象类
+ */
 public abstract class AbstractAnAction extends AnAction {
-    public AbstractAnAction(String s, Object o, Icon moduleDirectory) {
-        super(s, String.valueOf(o),moduleDirectory );
-    }
-
-    public AbstractAnAction() {
-
-    }
-
     @Override
-    public void actionPerformed(@NotNull AnActionEvent anActionEvent) {
-        doAction(anActionEvent);
+    public void actionPerformed(@NotNull AnActionEvent event) {
+        ProjectManager.getInstance().setProject(event.getProject());
+        doAction(event);
     }
 
+    /**
+     * 子类实现
+     *
+     * @param event
+     */
     public abstract void doAction(AnActionEvent event);
 
     /**
@@ -37,12 +37,6 @@ public abstract class AbstractAnAction extends AnAction {
         return event.getData(CommonDataKeys.VIRTUAL_FILE);
     }
 
-    /**
-     * 获取选中的多个文件
-     *
-     * @param event
-     * @return
-     */
     public VirtualFile[] getSelectFileArr(AnActionEvent event) {
         return event.getData(CommonDataKeys.VIRTUAL_FILE_ARRAY);
     }
@@ -55,9 +49,16 @@ public abstract class AbstractAnAction extends AnAction {
      */
     public boolean isNCModule(AnActionEvent event) {
         VirtualFile selectFile = getSelectFile(event);
-        Module module = getSelectModule(event);
-        File file = new File(selectFile.getPath() + File.separator + "META-INF" + File.separator + "module.xml");
-        return file.exists() && module.getModuleFile().getParent().getPath().equals(selectFile.getPath());
+        if (selectFile == null) {
+            return false;
+        }
+        Module module = ProjectManager.getInstance().getModule(selectFile.getName());
+        if (module == null) {
+            return false;
+        }
+
+
+        return StringUtils.isBlank(module.getName()) ? false : module.getName().equals(selectFile.getName());
     }
 
     /**

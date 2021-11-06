@@ -1,7 +1,7 @@
 package com.yingling.debug.util;
 
 import com.intellij.execution.RunManager;
-import com.intellij.execution.ShortenCommandLine;
+import com.intellij.execution.RunnerAndConfigurationSettings;
 import com.intellij.execution.application.ApplicationConfiguration;
 import com.intellij.execution.application.ApplicationConfigurationType;
 import com.intellij.execution.configurations.RunConfiguration;
@@ -11,17 +11,16 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.LangDataKeys;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.project.ProjectManager;
-import com.pub.exception.BusinessException;
-import com.yingling.extensions.service.NccEnvSettingService;
-import nc.uap.plugin.studio.ui.preference.prop.PropInfo;
-import nc.uap.plugin.studio.ui.preference.xml.PropXml;
-import nc.uap.plugin.studio.ui.preference.xml.XMLToObject;
-import org.apache.commons.lang.StringUtils;
+import com.yingling.base.BusinessException;
+import com.yingling.base.NccEnvSettingService;
+import com.yingling.base.ProjectManager;
+import com.yingling.script.studio.ui.preference.xml.PropXml;
 
 import java.io.File;
 import java.util.List;
 import java.util.Map;
+
+import static com.intellij.execution.ShortenCommandLine.CLASSPATH_FILE;
 
 public class CreatApplicationConfigurationUtil {
     private static String serverClass = "ufmiddle.start.tomcat.StartDirectServer";
@@ -37,15 +36,12 @@ public class CreatApplicationConfigurationUtil {
 
         String configName = serverFlag ? " - server" : " - client";
         Project project = event.getProject();
-        RunManagerImpl runManager = (RunManagerImpl) RunManager.getInstance(null == project ? ProjectManager.getInstance().getDefaultProject() : project);
-        List<RunConfiguration> configurationsList = runManager.getConfigurationsList(ApplicationConfigurationType.getInstance());
+        RunManagerImpl runManager = (RunManagerImpl) RunManager.getInstance(project);
+        List<RunConfiguration> configurationsList = runManager.getAllConfigurationsList();
 
         //当前选择module
         Module selectModule = event.getData(LangDataKeys.MODULE);
-        String modulePath = selectModule.getModuleFile().getParent().getPath();
-        if (!new File(modulePath + File.separator + "META-INF" + File.separator + "module.xml").exists()) {
-            throw new BusinessException("please select ncc module !");
-        }
+
         configName = selectModule.getName() + configName;
 
         //循环判断当前配置中有没有当前模块的启动配置
@@ -64,7 +60,7 @@ public class CreatApplicationConfigurationUtil {
         if (!hasFlag) {
             ApplicationConfiguration conf = new ApplicationConfiguration(configName, project, ApplicationConfigurationType.getInstance());
             setConfiguration(selectModule, conf, serverFlag);
-            RunnerAndConfigurationSettingsImpl runnerAndConfigurationSettings = new RunnerAndConfigurationSettingsImpl(runManager, conf);
+            RunnerAndConfigurationSettings runnerAndConfigurationSettings = new RunnerAndConfigurationSettingsImpl(runManager, conf);
             runManager.addConfiguration(runnerAndConfigurationSettings);
         }
     }
@@ -73,30 +69,27 @@ public class CreatApplicationConfigurationUtil {
 
         //检查并设置nc home
         String homePath = NccEnvSettingService.getInstance().getNcHomePath();
-        int port = 80 ;
-        String msg = "";
+        int port = 80;
         try {
             PropXml propXml = new PropXml();
-            String filename = homePath + "/ierp/bin/prop.xml";
+            String filename = new File(homePath).getPath() + "/ierp/bin/prop.xml";
             File file = new File(filename);
             if (!file.exists()) {
                 throw new BusinessException("");
             }
             port = propXml.loadPropInfo(filename).getDomain().getServer().getServicePort();
         } catch (Exception e) {
-            msg = "Please check the nchome\n";
+            throw new BusinessException("please check the file :prop.xml\n" + e.getMessage());
         }
-        if (StringUtils.isNotBlank(msg)) {
-            throw new BusinessException(msg);
-        }
+
 
         Map<String, String> envs = conf.getEnvs();
         if (serverFlag) {
             conf.setMainClassName(serverClass);
             String exModulesStr = NccEnvSettingService.getInstance().getEx_modules();
             envs.put("FIELD_EX_MODULES", exModulesStr);
-            envs.put("FIELD_HOTWEBS","nccloud");
-            envs.put("FIELD_ENCODING","UTF-8");
+            envs.put("FIELD_HOTWEBS", "nccloud");
+            envs.put("FIELD_ENCODING", "UTF-8");
             conf.setVMParameters("-Dnc.exclude.modules=$FIELD_EX_MODULES$\n" +
                     "-Dnc.runMode=develop\n" +
                     "-Dnc.server.location=$FIELD_NC_HOME$\n" +
@@ -125,7 +118,33 @@ public class CreatApplicationConfigurationUtil {
         conf.setModule(selectModule);
         conf.setEnvs(envs);
         conf.setWorkingDirectory(homePath);
-        conf.setShortenCommandLine(ShortenCommandLine.CLASSPATH_FILE);
+        conf.setShortenCommandLine(CLASSPATH_FILE);
+    }
+
+    /**
+     * 更新application中的home路径
+     *
+     * @throws BusinessException
+     */
+    public static void updateHome() throws BusinessException {
+
+        Project project = ProjectManager.getInstance().getProject();
+        RunManagerImpl runManager = (RunManagerImpl) RunManager.getInstance(project);
+        List<RunConfiguration> configurationsList = runManager.getAllConfigurationsList();
+        if (null != configurationsList && !configurationsList.isEmpty()) {
+            for (RunConfiguration configuration : configurationsList) {
+                if (configuration instanceof ApplicationConfiguration) {
+                    ApplicationConfiguration conf = (ApplicationConfiguration) configuration;
+                    RunnerAndConfigurationSettings runnerAndConfigurationSettings = new RunnerAndConfigurationSettingsImpl(runManager, conf);
+                    runManager.removeConfiguration(runnerAndConfigurationSettings);
+
+                    ApplicationConfiguration newConf = (ApplicationConfiguration) conf.clone();
+                    setConfiguration(newConf.getConfigurationModule().getModule(), newConf, serverClass.equals(conf.getMainClass()));
+                    runnerAndConfigurationSettings = new RunnerAndConfigurationSettingsImpl(runManager, newConf);
+                    runManager.addConfiguration(runnerAndConfigurationSettings);
+                }
+            }
+        }
     }
 
 }

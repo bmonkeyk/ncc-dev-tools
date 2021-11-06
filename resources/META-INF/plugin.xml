@@ -1,74 +1,121 @@
 <idea-plugin>
-    <id>com.yonyou.ncchr.plugin.ncc-dev-tools</id>
+    <id>ncc-dev-tools-bmonkeyk</id>
     <name>ncc-dev-tools</name>
-    <version>3.0.0</version>
+    <version>4.0.0</version>
     <vendor email="bmonkeyk@126.com" url="http://www.yonyou.com">业余开发部</vendor>
 
     <description>[使用方法](http://note.youdao.com/noteshare?id=4485948a8170316f3967095b7697bb28)</description>
 
-    <change-notes>适配最新版idea,version:2021.1.1</change-notes>
+    <change-notes>适配最新版idea,version:2021.1.3</change-notes>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
     <idea-version since-build="173.0"/>
-    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
-         on how to target different products -->
-    <!-- uncomment to enable plugin in all products
-    <depends>component.intellij.modules.lang</depends>
-    -->
+
+    <!-- please see https://plugins.jetbrains.com/docs/intellij/build-number-ranges.html for description -->
+
+    <!--    <depends>com.intellij.modules.platform</depends>-->
+
+
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Add your extensions here -->
+        <moduleType id="NCCMODULE" implementationClass="com.yingling.module.NCCModuleType"/>
+        <projectService serviceInterface="com.yingling.base.NccEnvSettingService"
+                        serviceImplementation="com.yingling.base.NccEnvSettingService"/>
+
+    </extensions>
+
     <actions>
-        <action id="add ncc module" class="com.yingling.module.action.CreateNewModuleAction" text="MDE module">
+
+        <action id="dev.module.conver" class="com.yingling.module.action.ConvertModuleAction" text="转为ncc模块"
+                description="转为ncc模块" icon="AllIcons.Actions.ModuleDirectory">
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
+        </action>
+
+        <action id="dev.module.newmodule" class="com.yingling.module.action.CreateNewNCModuleAction" text="新建ncc模块"
+                description="新建ncc模块" icon="AllIcons.Actions.ModuleDirectory">
             <add-to-group group-id="NewGroup" relative-to-action="NewModule" anchor="before"/>
         </action>
-        <action id="add ncc componet" class="com.yingling.module.action.CreateComponentAction" text="MDE componet">
+
+        <action id="dev.module.newcomponent" class="com.yingling.module.action.CreateNCComponentAction" text="新建ncc组件"
+                description="新建ncc组件" icon="AllIcons.Actions.ModuleDirectory">
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
             <add-to-group group-id="NewGroup" relative-to-action="NewModule" anchor="before"/>
         </action>
-        <!-- Add your actions here -->
-        <action id="set module libraries" class="com.yingling.libraries.action.LibrarySetAction" text="设置nc类路径">
+
+        <action id="dev.extend.copy" class="com.yingling.extend.action.CopyExtendAction" text="复制鉴权文件到nchome"
+                description="复制鉴权文件到nchome">
             <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
         </action>
-        <action id="copy extend file" class="com.yingling.extend.action.CoryExtendAction" text="复制鉴权文件到nchome">
+        <action id="copy.upm.copy" class="com.yingling.upm.action.CopyUpmAction" text="复制upm文件到nchome"
+                description="复制upm文件到nchome">
             <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
         </action>
-        <action id="copy ejb file" class="com.yingling.ejbconf.action.CopyEjbConfAction" text="复制upm文件到nchome">
+
+        <action id="dev.set.libraries" class="com.yingling.library.action.LibrariesSetAction" popup="true"
+                text="设置nc类路径" description="设置nc类路径">
             <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
         </action>
-        <action id="com.yonyou.ria.core.scriptexport.action1"
-                class="com.yonyou.ria.core.scriptexport.ui.actions.ExportComponentInitDataAction" text="导出预置脚本"
+
+        <action id="dev.config" class="com.yingling.devconfig.action.DevConfigAction" popup="true" text="集成配置"
+                description="集成配置">
+        </action>
+
+        <action id="dev.about" class="com.yingling.devconfig.action.AboutAction" popup="true" text="使用教程"
+                description="使用配置"/>
+
+        <action id="dev.reset" class="com.yingling.reset.action.ResetAction" popup="true" text="Eval Reset"
+                description="idea授权重置">
+            <add-to-group group-id="HelpMenu" anchor="last"/>
+            <add-to-group group-id="WelcomeScreen.Options"/>
+        </action>
+        <action id="dev.sql.item.export"
+                class="com.yingling.script.action.ExportCommonInitAction" text="item导出预置脚本"
                 description="使用items.xml文件导出预置数据脚本">
             <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
         </action>
-        <action id="com.yonyou.ria.core.pdmexport.action1"
-                class="com.yonyou.ria.core.pdmexport.popup.actions.ExportDBCreateScriptsAction" text="pdm文件导出建库脚本"
+        <action id="dev.sql.pdm.export"
+                class="com.yingling.script.action.ExportDBCreateScriptsAction" text="pdm导出建库脚本"
                 description="使用pdm文件导出建库脚本">
             <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
         </action>
-        <action id="build-patcher" class="com.yingling.patcher.action.BuildPatcher" text="导出补丁..."
+        <action id="dev.patcher.export" class="com.yingling.patcher.action.BuildPatcherAction" text="导出补丁NCC补丁"
                 description="导出NMC格式补丁">
             <add-to-group group-id="ChangesViewPopupMenu" anchor="last"/>
             <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
             <add-to-group group-id="Vcs.Log.ChangesBrowser.Popup" anchor="last"/>
         </action>
-<!--        <action id="publishMetaData" class="com.yingling.metadata.action.PublishMetaDataAction" text="发布元数据"-->
-<!--                description="发布元数据">-->
-<!--            <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>-->
-<!--        </action>-->
-        <action class="com.yingling.debug.action.NewServerApplicationAction" id="serverApplication"
+        <!--        <action id="publishMetaData" class="com.yingling.metadata.action.PublishMetaDataAction" text="发布元数据"-->
+        <!--                description="发布元数据">-->
+        <!--            <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>-->
+        <!--        </action>-->
+        <action id="dev.application.server.create" class="com.yingling.debug.action.NewServerApplicationAction"
                 text="server application" description="server application"/>
-        <action class="com.yingling.debug.action.NewClientApplicationAction" id="clientApplication"
+        <action id="dev.application.client.create" class="com.yingling.debug.action.NewClientApplicationAction"
                 text="client application" description="client application"/>
 
-        <group id="debug" text="调试..." popup="true" description="调试...">
-            <reference id="serverApplication"/>
-            <reference id="clientApplication"/>
+        <action id="dev.dictionary" class="com.yingling.dictionary.action.DataDictionaryAction" text="数据字典"
+                description="数据字典"/>
+        <action id="dev.reload.module" class="com.yingling.devconfig.action.LoadAllModuleAction" text="加载所有模块"
+                description="加载所有模块"/>
+        <group id="dev.debug" text="调试..." popup="true" description="调试..."
+               class="com.yingling.debug.action.AppGroupAction">
+            <reference id="dev.application.server.create"/>
+            <reference id="dev.application.client.create"/>
             <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
         </group>
+        <group id="dev.group" description="集成配置" text="集成配置" popup="true" icon="/img/logo.svg">
 
+            <reference id="dev.config"/>
+<!--            <reference id="dev.reload.module"/>-->
+            <reference id="dev.dictionary"/>
+<!--            <reference id="dev.reset"/>-->
+            <reference id="dev.about"/>
+            <!--添加到bar显示-->
+            <add-to-group group-id="ToolbarRunGroup" anchor="first"/>
+            <!--添加到tool菜单显示-->
+            <add-to-group group-id="ToolsMenu" anchor="last"/>
+
+        </group>
     </actions>
-
-    <extensions defaultExtensionNs="com.intellij">
-        <projectConfigurable instance="com.yingling.extensions.component.NccDevSettingComponent"/>
-        <projectService serviceInterface="com.yingling.extensions.service.NccEnvSettingService"
-                        serviceImplementation="com.yingling.extensions.service.NccEnvSettingService"/>
-    </extensions>
 
 </idea-plugin>

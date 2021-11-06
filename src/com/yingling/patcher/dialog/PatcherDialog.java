@@ -6,18 +6,33 @@ import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.components.JBList;
-import com.yingling.extensions.service.NccEnvSettingService;
+import com.yingling.abs.AbstractDialog;
+import com.yingling.base.NccEnvSettingService;
 import com.yingling.patcher.util.ExportPatcherUtil;
 import org.apache.commons.lang.StringUtils;
 
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
+import javax.swing.JFileChooser;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
+import javax.swing.JTextField;
+import javax.swing.KeyStroke;
+import javax.swing.ListModel;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Dimension;
+import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 
-public class PatcherDialog extends JDialog {
+public class PatcherDialog extends AbstractDialog {
 
     private JPanel contentPane;
     private JButton buttonOK;
@@ -132,7 +147,7 @@ public class PatcherDialog extends JDialog {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                ExportPatcherUtil util = new ExportPatcherUtil(patcherName.getText(), serverName.getText(), exportPath, srcFlag,cloudFlag, event);
+                ExportPatcherUtil util = new ExportPatcherUtil(patcherName.getText(), serverName.getText(), exportPath, srcFlag, cloudFlag, event);
                 try {
                     util.exportPatcher(progressBar);
                     String zipName = util.getZipName();

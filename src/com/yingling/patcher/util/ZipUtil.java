@@ -1,6 +1,6 @@
 package com.yingling.patcher.util;
 
-import com.pub.exception.BusinessException;
+import com.yingling.base.BusinessException;
 
 import java.io.BufferedInputStream;
 import java.io.File;
