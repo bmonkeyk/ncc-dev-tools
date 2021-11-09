@@ -36,7 +36,8 @@ public class CopyExtendAction extends AbstractAnAction {
         } else {
             File file = new File(selectFile.getPath());
             if (file.isFile()) {
-                flag = file.getName().endsWith(".xml") && file.getPath().contains("yyconfig" + File.separator + "modules") && (file.getParent().endsWith("action") || file.getParent().endsWith("authorize"));
+                //VirtualFile在getPath以后只有"/"，因此不需要使用File.separator
+                flag = file.getName().endsWith(".xml") && file.getPath().contains("yyconfig/modules") && (file.getParent().endsWith("action") || file.getParent().endsWith("authorize"));
             }
         }
         e.getPresentation().setEnabledAndVisible(flag);

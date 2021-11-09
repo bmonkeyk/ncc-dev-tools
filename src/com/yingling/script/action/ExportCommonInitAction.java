@@ -77,7 +77,8 @@ public class ExportCommonInitAction extends AbstractAnAction {
     @Override
     public void update(@NotNull AnActionEvent e) {
         VirtualFile file = getSelectFile(e);
-        boolean flag = file.getPath().contains("script" + File.separator + "conf") && file.getPath().endsWith("items.xml");
+        //VirtualFile在getPath以后只有"/"，因此不需要使用File.separator
+        boolean flag = file.getPath().contains("script/conf") && file.getPath().endsWith("items.xml");
         e.getPresentation().setEnabledAndVisible(flag);
     }
 }

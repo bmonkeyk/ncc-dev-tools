@@ -67,7 +67,8 @@ public class ExportDBCreateScriptsAction extends AbstractAnAction {
     @Override
     public void update(@NotNull AnActionEvent e) {
         VirtualFile selectFile = getSelectFile(e);
-        boolean flag = selectFile != null && !selectFile.isDirectory() && selectFile.getPath().contains("script" + File.separator + "conf") && selectFile.getName().endsWith(".pdm");
+        //VirtualFile在getPath以后只有"/"，因此不需要使用File.separator
+        boolean flag = selectFile != null && !selectFile.isDirectory() && selectFile.getPath().contains("script/conf") && selectFile.getName().endsWith(".pdm");
         e.getPresentation().setEnabledAndVisible(flag);
     }
 }
