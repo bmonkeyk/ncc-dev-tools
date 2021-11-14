@@ -10,6 +10,8 @@ import com.yingling.base.BusinessException;
 import com.yingling.base.ProjectManager;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
+
 /**
  * 设置模块累路径
  */
@@ -32,10 +34,10 @@ public class LibrariesSetAction extends AbstractAnAction {
     @Override
     public void update(@NotNull AnActionEvent e) {
         VirtualFile file = getSelectFile(e);
-        Module module = getSelectModule(e);
-
-//        boolean flag = module != null && file != null && module.getName().equals(file.getName());
         boolean flag = isModuleChild(file, e);
+        if(flag){
+            flag = new File(file.getPath() + File.separator + "META-INF" + File.separator + "module.xml").exists();
+        }
         e.getPresentation().setEnabledAndVisible(flag);
     }
 }
