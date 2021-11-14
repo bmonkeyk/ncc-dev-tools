@@ -32,12 +32,25 @@ public class ProjectManager {
         return instance;
     }
 
+    public static ProjectManager getInstance(Project project) {
+        if (instance == null) {
+            instance = new ProjectManager();
+        }
+        if (instance.getProject() == null) {
+            instance.setProject(project);
+        }
+        return instance;
+    }
+
     /**
      * 获取当前project
      *
      * @return
      */
     public Project getProject() {
+        if (project == null) {
+
+        }
         return project;
     }
 
@@ -157,7 +170,7 @@ public class ProjectManager {
         return t;
     }
 
-    public <T> T getservice(Class<T> clazz) {
+    public <T> T getService(Class<T> clazz) {
         return getService(getProject(), clazz);
     }
 }

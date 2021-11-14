@@ -36,13 +36,13 @@ public class BuildPatcherAction extends AbstractAnAction {
                     flag = false;
                     break;
                 }
-                flag = isModuleChild(virtualFile, e);
-                if (flag) {
-                    Module module = getSelectModule(e);
-                    if (virtualFile.getParent().equals(module.getModuleFile().getParent())) {
-                        flag = new File(virtualFile.getPath() + File.separator + "component.xml").exists();
-                    }
-                }
+                flag = isModuleChild(virtualFile, e) || isMavenModuleChild(virtualFile, e);
+//                if (flag) {
+//                    Module module = getSelectModule(e);
+//                    if (virtualFile.getParent().equals(module.getModuleFile().getParent())) {
+//                        flag = new File(virtualFile.getPath() + File.separator + "component.xml").exists();
+//                    }
+//                }
             }
         }
         e.getPresentation().setEnabledAndVisible(flag);

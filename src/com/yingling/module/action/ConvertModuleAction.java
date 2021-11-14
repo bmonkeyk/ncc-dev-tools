@@ -50,7 +50,7 @@ public class ConvertModuleAction extends AbstractAnAction {
                     flag = false;
                     break;
                 }
-                Module module = ProjectManager.getInstance().getModule(virtualFile.getName());
+                Module module = ProjectManager.getInstance(e.getProject()).getModule(virtualFile.getName());
                 flag = module == null && new File(virtualFile.getPath() + File.separator + "META-INF" + File.separator + "module.xml").exists();
 
             }

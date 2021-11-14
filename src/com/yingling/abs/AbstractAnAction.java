@@ -83,6 +83,23 @@ public abstract class AbstractAnAction extends AnAction {
         return flag;
     }
 
+    public boolean isMavenModuleChild(VirtualFile file, AnActionEvent event) {
+        boolean flag;
+        if (file == null) {
+            return false;
+        }
+        Module module = ModuleUtil.findModuleForFile(file, event.getProject());
+        if (module == null) {
+            return false;
+        }
+        VirtualFile moduleFile = module.getModuleFile();
+        if (moduleFile == null) {
+            return false;
+        }
+        flag = new File(moduleFile.getParent().getPath() + File.separator + "pom.xml").exists();
+        return flag;
+    }
+
     /**
      * 获取选中模块
      *

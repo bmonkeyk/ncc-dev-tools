@@ -120,13 +120,12 @@ public class LoadAllModuleAction extends AbstractAnAction {
         File ncModuleFile = new File(ncModulePath);
         File mavenModuleFile = new File(mavenModulePath);
 
+        Module module = ProjectManager.getInstance().getModule(f.getName());
         if (ncModuleFile.exists()) {
-            Module module = ProjectManager.getInstance().getModule(f.getName());
             if (module == null) {
                 return ModuleUtil.MODULE_TYPE_NC;
             }
         } else if (mavenModuleFile.exists()) {
-            Module module = ProjectManager.getInstance().getModule(f.getName());
             if (module == null) {
                 return ModuleUtil.MODULE_TYPE_MAVEN;
             }
