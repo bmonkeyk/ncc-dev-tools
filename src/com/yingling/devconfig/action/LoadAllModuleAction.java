@@ -99,9 +99,10 @@ public class LoadAllModuleAction extends AbstractAnAction {
             }
             int moduleType = isModuleDir(f);
             if (moduleType == ModuleUtil.MODULE_TYPE_NC /**|| moduleType == ModuleUtil.MODULE_TYPE_MAVEN**/) {
-                modulePathSet.add(f.getPath());
+                //当前路径应该是 hrkq/MATE-INF,因此,是上级目录可以作为模块目录
+                modulePathSet.add(f.getParent());
                 //判断上级是否需要加入
-                Module module = ProjectManager.getInstance().getModule(f.getParentFile().getName());
+                Module module = ProjectManager.getInstance().getModule(f.getParentFile().getParentFile().getName());
                 if (module == null) {
                     modulePathSet.add(f.getParentFile().getPath());
                 }
@@ -113,7 +114,7 @@ public class LoadAllModuleAction extends AbstractAnAction {
     //判断是否是模块目录
     private int isModuleDir(File f) {
 
-        String ncModulePath = f.getPath() + File.separator + "META-INF" + File.separator + "module.xml";
+        String ncModulePath = f.getPath() + File.separator + "module.xml";
         String mavenModulePath = f.getPath() + File.separator + "pom.xml";
 
         File ncModuleFile = new File(ncModulePath);

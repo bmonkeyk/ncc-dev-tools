@@ -1,11 +1,16 @@
 package com.yingling.patcher.action;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.module.Module;
+import com.intellij.openapi.module.ModuleUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.newvfs.impl.FsRoot;
 import com.yingling.abs.AbstractAnAction;
+import com.yingling.base.ProjectManager;
 import com.yingling.patcher.dialog.PatcherDialog;
 import org.jetbrains.annotations.NotNull;
+
+import java.io.File;
 
 
 public class BuildPatcherAction extends AbstractAnAction {
@@ -30,6 +35,13 @@ public class BuildPatcherAction extends AbstractAnAction {
                 if (virtualFile instanceof FsRoot) {
                     flag = false;
                     break;
+                }
+                flag = isModuleChild(virtualFile, e);
+                if (flag) {
+                    Module module = getSelectModule(e);
+                    if (virtualFile.getParent().equals(module.getModuleFile().getParent())) {
+                        flag = new File(virtualFile.getPath() + File.separator + "component.xml").exists();
+                    }
                 }
             }
         }

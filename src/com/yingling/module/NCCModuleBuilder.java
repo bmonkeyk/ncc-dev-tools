@@ -145,8 +145,8 @@ public class NCCModuleBuilder extends ModuleBuilder {
     public List<Pair<String, String>> getSourcePaths() {
         if (this.mySourcePaths == null) {
             List<Pair<String, String>> paths = new ArrayList();
-            String var10000 = this.getContentEntryPath();
-            String path = var10000 + File.separator + "src";
+            String entryPath = this.getContentEntryPath();
+            String path = entryPath + File.separator + "src";
             (new File(path)).mkdirs();
             paths.add(Pair.create(path, ""));
             return paths;

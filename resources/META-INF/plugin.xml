@@ -106,9 +106,9 @@
         <group id="dev.group" description="集成配置" text="集成配置" popup="true" icon="/img/logo.svg">
 
             <reference id="dev.config"/>
-<!--            <reference id="dev.reload.module"/>-->
+            <!--            <reference id="dev.reload.module"/>-->
             <reference id="dev.dictionary"/>
-<!--            <reference id="dev.reset"/>-->
+            <!--            <reference id="dev.reset"/>-->
             <reference id="dev.about"/>
             <!--添加到bar显示-->
             <add-to-group group-id="ToolbarRunGroup" anchor="first"/>

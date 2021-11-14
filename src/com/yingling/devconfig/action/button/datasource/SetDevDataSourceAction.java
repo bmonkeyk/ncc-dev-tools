@@ -26,15 +26,20 @@ public class SetDevDataSourceAction extends AbstractButtonAction {
         String dsname = (String) dialog.getComponent(JComboBox.class, "dbBox").getSelectedItem();
         int index = dialog.getComponent(JComboBox.class, "dbBox").getSelectedIndex();
         int count = dialog.getComponent(JComboBox.class, "dbBox").getItemCount();
-        for (int i = 0; i < count; i++) {
-            if ("design".equals(dialog.getComponent(JComboBox.class, "dbBox").getItemAt(i))) {
-                return;
-            }
+
+        if ("design".equals(dialog.getComponent(JComboBox.class, "dbBox").getItemAt(index))) {
+            return;
         }
+//        for (int i = 0; i < count; i++) {
+//            if ("design".equals(dialog.getComponent(JComboBox.class, "dbBox").getItemAt(i))) {
+//                return;
+//            }
+//        }
         if (StringUtils.isNotBlank(dsname)) {
             try {
                 Map<String, DataSourceMeta> dataSourceMetaMap = dialog.getDataSourceMetaMap();
                 DataSourceMeta meta = (DataSourceMeta) dataSourceMetaMap.get(dsname).clone();
+//                DataSourceMeta designMeta = dataSourceMetaMap.get("design");
                 meta.setDataSourceName("design");
                 meta.setBase(false);
                 dataSourceMetaMap.put(meta.getDataSourceName(), meta);

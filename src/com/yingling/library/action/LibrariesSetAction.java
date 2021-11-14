@@ -34,7 +34,8 @@ public class LibrariesSetAction extends AbstractAnAction {
         VirtualFile file = getSelectFile(e);
         Module module = getSelectModule(e);
 
-        boolean flag = module != null && file != null && module.getName().equals(file.getName());
+//        boolean flag = module != null && file != null && module.getName().equals(file.getName());
+        boolean flag = isModuleChild(file, e);
         e.getPresentation().setEnabledAndVisible(flag);
     }
 }

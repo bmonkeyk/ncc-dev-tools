@@ -67,7 +67,8 @@ public class OKAction extends AbstractButtonAction {
      */
     private void setLibraries(boolean homeChanged) throws BusinessException {
 
-        if (!homeChanged) {
+        boolean setLibFlag = ((DevConfigDialog) getDialog()).isLibFlag();
+        if (!homeChanged || setLibFlag) {
             return;
         }
 

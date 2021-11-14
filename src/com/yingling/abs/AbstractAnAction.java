@@ -5,10 +5,13 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.actionSystem.LangDataKeys;
 import com.intellij.openapi.module.Module;
+import com.intellij.openapi.module.ModuleUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.yingling.base.ProjectManager;
 import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
+
+import java.io.File;
 
 /**
  * idea按钮抽象类
@@ -52,13 +55,32 @@ public abstract class AbstractAnAction extends AnAction {
         if (selectFile == null) {
             return false;
         }
-        Module module = ProjectManager.getInstance().getModule(selectFile.getName());
+        Module module = ModuleUtil.findModuleForFile(selectFile, event.getProject());
         if (module == null) {
             return false;
         }
 
+        boolean flag = selectFile != null && module != null
+                && module.getName().equals(selectFile.getName())
+                && new File(selectFile.getPath() + File.separator + "META-INF" + File.separator + "module.xml").exists();
+        return flag;
+    }
 
-        return StringUtils.isBlank(module.getName()) ? false : module.getName().equals(selectFile.getName());
+    public boolean isModuleChild(VirtualFile file, AnActionEvent event) {
+        boolean flag;
+        if (file == null) {
+            return false;
+        }
+        Module module = ModuleUtil.findModuleForFile(file, event.getProject());
+        if (module == null) {
+            return false;
+        }
+        VirtualFile moduleFile = module.getModuleFile();
+        if (moduleFile == null) {
+            return false;
+        }
+        flag = new File(moduleFile.getParent().getPath() + File.separator + "META-INF" + File.separator + "module.xml").exists();
+        return flag;
     }
 
     /**

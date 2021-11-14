@@ -101,6 +101,10 @@ public class DevConfigDialog extends AbstractDialog {
     //当前数据源
     private DataSourceMeta currMeta;
 
+
+    //是否点击过设置类路径
+    private boolean libFlag = false;
+
     public DevConfigDialog() {
         initUI();
         initListener();
@@ -219,7 +223,7 @@ public class DevConfigDialog extends AbstractDialog {
         addComponent("tabbedPane", tabbedPane);
         addComponent("mustTable", mustTable);
         addComponent("selTable", selTable);
-        addComponent("setLibBtn",setLibBtn);
+        addComponent("setLibBtn", setLibBtn);
 
     }
 
@@ -263,5 +267,13 @@ public class DevConfigDialog extends AbstractDialog {
 
     public int getTabIndex() {
         return tabbedPane.getSelectedIndex();
+    }
+
+    public boolean isLibFlag() {
+        return libFlag;
+    }
+
+    public void setLibFlag(boolean libFlag) {
+        this.libFlag = libFlag;
     }
 }

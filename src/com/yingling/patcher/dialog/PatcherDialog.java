@@ -31,6 +31,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 
 public class PatcherDialog extends AbstractDialog {
 
@@ -144,29 +145,35 @@ public class PatcherDialog extends AbstractDialog {
             }
         });
 
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                ExportPatcherUtil util = new ExportPatcherUtil(patcherName.getText(), serverName.getText(), exportPath, srcFlag, cloudFlag, event);
-                try {
-                    util.exportPatcher(progressBar);
-                    String zipName = util.getZipName();
-                    if (StringUtils.isBlank(zipName)) {
-                        zipName = "no files export , please build project , or select src retry !";
-                    } else {
-                        zipName = "outFile : " + zipName;
+        try {
+            SwingUtilities.invokeAndWait(new Runnable() {
+                @Override
+                public void run() {
+                    ExportPatcherUtil util = new ExportPatcherUtil(patcherName.getText(), serverName.getText(), exportPath, srcFlag, cloudFlag, event);
+                    try {
+                        util.exportPatcher(progressBar);
+                        String zipName = util.getZipName();
+                        if (StringUtils.isBlank(zipName)) {
+                            zipName = "no files export , please build project , or select src retry !";
+                        } else {
+                            zipName = "outFile : " + zipName;
+                        }
+                        Messages.showInfoMessage("Success!\n" + zipName, "Tips");
+                        dispose();
+                    } catch (Exception e) {
+                        Messages.showErrorDialog(e.getMessage(), "Error");
+                    } finally {
+                        util.delete(new File(util.getExportPath()));
+                        dispose();
                     }
-                    Messages.showInfoMessage("Success!\n" + zipName, "Tips");
-                    dispose();
-                } catch (Exception e) {
-                    Messages.showErrorDialog(e.getMessage(), "Error");
-                } finally {
-                    util.delete(new File(util.getExportPath()));
-                    dispose();
-                }
 
-            }
-        });
+                }
+            });
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
 
         // add your code here
     }

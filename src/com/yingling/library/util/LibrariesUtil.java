@@ -293,7 +293,8 @@ public class LibrariesUtil {
                 out.close();
             }
         }
-
+        //这里不关掉，上边删除不了
+        jar.close();
     }
 
     /**

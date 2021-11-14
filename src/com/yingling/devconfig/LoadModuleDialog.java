@@ -13,10 +13,10 @@ import java.awt.Toolkit;
 public class LoadModuleDialog extends AbstractDialog {
     private JPanel contentPane;
     private JProgressBar progressBar;
-    private String msg ;
+    private String msg;
 
 
-    public LoadModuleDialog(){
+    public LoadModuleDialog() {
         setContentPane(contentPane);
         int width = Toolkit.getDefaultToolkit().getScreenSize().width;
         int height = Toolkit.getDefaultToolkit().getScreenSize().height;

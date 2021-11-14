@@ -28,7 +28,7 @@ public class InitDataDialog extends AbstractDialog {
     private String dsName;
     private VirtualFile itemFile;
 
-    public InitDataDialog(){
+    public InitDataDialog() {
         setContentPane(contentPane);
         //获取显示屏尺寸，使界面居中
         int width = Toolkit.getDefaultToolkit().getScreenSize().width;
@@ -67,7 +67,7 @@ public class InitDataDialog extends AbstractDialog {
         this.progressBar = progressBar;
     }
 
-    public String getDsName(){
+    public String getDsName() {
         return dsName;
     }
 

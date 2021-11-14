@@ -170,7 +170,7 @@ public class ExportPatcherUtil {
         for (String moduleName : modulePathMap.keySet()) {
             Module module = moduleMap.get(moduleName);
             Set<String> fileUrlSet = modulePathMap.get(moduleName);
-            System.out.println("......stat the " + moduleIndex + "th module : " + moduleName + ",total : " + fileUrlSet.size() + "......");
+            System.out.println("......start the " + moduleIndex + "th module : " + moduleName + ",total : " + fileUrlSet.size() + "......");
             CompilerModuleExtension instance = CompilerModuleExtension.getInstance(module);
             VirtualFile outPath = instance.getCompilerOutputPath();
             if (outPath == null) {

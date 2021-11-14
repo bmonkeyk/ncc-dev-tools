@@ -51,7 +51,7 @@ public class InitDataExportAction extends AbstractButtonAction {
     public void doAction(ActionEvent event) throws BusinessException {
         InitDataDialog dialog = (InitDataDialog) getDialog();
         VirtualFile selectFile = dialog.getItemFile();
-        SwingUtilities .invokeLater(new Runnable() {
+        SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
                 doExport(selectFile, dialog);

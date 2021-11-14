@@ -30,7 +30,7 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.text.MessageFormat;
 
-public class NewComponetDialog extends JDialog {
+public class NewComponentDialog extends JDialog {
 
     private JPanel contentPane;
     private JButton buttonOK;
@@ -40,7 +40,7 @@ public class NewComponetDialog extends JDialog {
     private JTextField nameText;
     private AnActionEvent event;
 
-    public NewComponetDialog(final AnActionEvent event) {
+    public NewComponentDialog(final AnActionEvent event) {
         this.event = event;
         Project project = event.getProject();
         setTitle("creat new nc componet...");

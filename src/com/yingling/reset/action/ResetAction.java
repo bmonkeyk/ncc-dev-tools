@@ -5,7 +5,8 @@ import com.yingling.abs.AbstractAnAction;
 import com.yingling.reset.helper.Constants;
 import com.yingling.reset.ui.dialog.MainDialog;
 
-public class ResetAction extends AbstractAnAction{//AnAction implements DumbAware {
+public class ResetAction extends AbstractAnAction {//AnAction implements DumbAware {
+
     public ResetAction() {
 //        super(Constants.ACTION_NAME, "Reset my IDE eval information", AllIcons.General.Reset);
 

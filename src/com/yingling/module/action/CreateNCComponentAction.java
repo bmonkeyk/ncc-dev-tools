@@ -5,7 +5,7 @@ import com.intellij.openapi.module.Module;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.yingling.abs.AbstractAnAction;
-import com.yingling.module.NewComponetDialog;
+import com.yingling.module.NewComponentDialog;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -23,7 +23,7 @@ public class CreateNCComponentAction extends AbstractAnAction {
             return;
         }
 
-        NewComponetDialog dialog = new NewComponetDialog(event);
+        NewComponentDialog dialog = new NewComponentDialog(event);
         dialog.setSize(900, 300);
         dialog.setLocationRelativeTo(null);
         dialog.setVisible(true);

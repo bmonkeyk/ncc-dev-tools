@@ -2,9 +2,7 @@ package com.yingling.module.util;
 
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.roots.ContentEntry;
-import com.intellij.openapi.roots.ModifiableRootModel;
-import com.intellij.openapi.roots.ModuleRootManager;
+import com.intellij.openapi.roots.*;
 import com.intellij.openapi.roots.libraries.Library;
 import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.util.io.FileUtil;
@@ -68,25 +66,32 @@ public class ModuleUtil {
             builder.setSourcePaths(list);
             builder.setLibraries(libraries);
             builder.commitModule(project, null);
-        } else {
-            ModifiableRootModel modifiableModel = ModuleRootManager.getInstance(module).getModifiableModel();
-            ContentEntry contentEntry = modifiableModel.getContentEntries()[0];
-            List<Pair<String, String>> list = getSourcePathList(moduleType, modulePath);
-            for (Pair<String, String> str : list) {
-                VirtualFile sourceRoot = LocalFileSystem.getInstance().refreshAndFindFileByPath(FileUtil.toSystemIndependentName(str.getFirst()));
-                contentEntry.addSourceFolder(sourceRoot, false);
-            }
-            Library[] libs = modifiableModel.getModuleLibraryTable().getLibraries();
-            if (libs == null || libs.length < libraries.length) {
-                for (Library lib : libs) {
-                    modifiableModel.getModuleLibraryTable().removeLibrary(lib);
-                }
-                for (Library lib : libraries) {
-                    modifiableModel.addLibraryEntry(lib);
-                }
-            }
-            modifiableModel.commit();
         }
+//        else {
+//            ModifiableRootModel modifiableModel = ModuleRootManager.getInstance(module).getModifiableModel();
+//            if(moduleType == MODULE_TYPE_MAVEN){
+//                VirtualFile out = CompilerProjectExtension.getInstance(project).getCompilerOutput();
+//                modifiableModel.getModuleExtension(CompilerModuleExtension.class).setCompilerOutputPath(out.getPath());
+//            } else if(moduleType == MODULE_TYPE_NC){
+//                ContentEntry contentEntry = modifiableModel.getContentEntries()[0];
+//                List<Pair<String, String>> list = getSourcePathList(moduleType, modulePath);
+//                for (Pair<String, String> str : list) {
+//                    VirtualFile sourceRoot = LocalFileSystem.getInstance().refreshAndFindFileByPath(FileUtil.toSystemIndependentName(str.getFirst()));
+//                    contentEntry.addSourceFolder(sourceRoot, false);
+//                }
+//                Library[] libs = modifiableModel.getModuleLibraryTable().getLibraries();
+//                if (libs == null || libs.length < libraries.length) {
+//                    for (Library lib : libs) {
+//                        modifiableModel.getModuleLibraryTable().removeLibrary(lib);
+//                    }
+//                    modifiableModel.commit();
+//                    for (Library lib : libraries) {
+//                        modifiableModel.addLibraryEntry(lib);
+//                    }
+//                    modifiableModel.commit();
+//                }
+//            }
+//        }
     }
 
     /**
@@ -157,7 +162,7 @@ public class ModuleUtil {
 //                        break;
 //                    }
 //                }
-                moduleName = "maven_" + file.getName();
+            moduleName = "maven_" + file.getName();
 //            } else
             if (ncModuleFile.exists()) {
                 moduleName = "nc_" + file.getName();

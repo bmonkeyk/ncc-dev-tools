@@ -30,13 +30,14 @@ public class NewClientApplicationAction extends AbstractAnAction {
     public void update(@NotNull AnActionEvent e) {
         VirtualFile file = e.getData(CommonDataKeys.VIRTUAL_FILE);
 
-        Module module = e.getData(LangDataKeys.MODULE);
-        boolean flag = file != null
-                && module != null
-                && !(file instanceof FsRoot)
-                && new File(file.getPath()).isDirectory()
-                && module.getName().equals(file.getName());
+//        Module module = e.getData(LangDataKeys.MODULE);
+//        boolean flag = file != null
+//                && module != null
+//                && !(file instanceof FsRoot)
+//                && new File(file.getPath()).isDirectory()
+//                && module.getName().equals(file.getName());
 
+        boolean flag = isModuleChild(file, e);
         e.getPresentation().setEnabledAndVisible(flag);
     }
 }

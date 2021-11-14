@@ -9,6 +9,8 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.newvfs.impl.FsRoot;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
+
 public class AppGroupAction extends DefaultActionGroup {
 
 
@@ -22,7 +24,9 @@ public class AppGroupAction extends DefaultActionGroup {
         boolean flag = module != null
                 && file != null
                 && !(file instanceof FsRoot)
-                && module.getName().equals(file.getName());
+                && module.getName().equals(file.getName())
+                && module.getModuleFile() != null
+                && new File(module.getModuleFile().getParent().getPath() + File.separator + "META-INF" + File.separator + "module.xml").exists();
 
         e.getPresentation().setEnabledAndVisible(flag);
 
